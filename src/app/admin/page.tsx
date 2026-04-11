@@ -71,7 +71,7 @@ export default function AdminDashboard() {
 
       {/* Revenue Summary */}
       <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Revenue</h2>
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 sm:gap-4 mb-4">
         <div className="bg-white rounded-lg border border-gray-200 p-5">
           <p className="text-sm font-medium text-gray-500">Today</p>
           <p className="text-2xl font-bold text-gray-900 mt-1">${revDaily.toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
@@ -95,7 +95,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Revenue by Product */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-3 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
         <div className="bg-white rounded-lg border border-gray-200 p-4">
           <p className="text-xs text-gray-500">Smart Lead</p>
           <p className="text-lg font-bold text-gray-900">${leadRevMonthly.toLocaleString(undefined, { maximumFractionDigits: 0 })}<span className="text-xs text-gray-400">/mo</span></p>

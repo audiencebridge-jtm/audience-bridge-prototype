@@ -6,7 +6,19 @@
       "Bash(curl --version)",
       "Bash(curl -fsSL https://fnm.vercel.app/install)",
       "Bash(bash)",
-      "Bash(curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh)"
+      "Bash(curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh)",
+      "Bash(npx next:*)",
+      "Bash(cp /Users/justinmerrell/Documents/AB-Logos/AB_A-favicon.png /Users/justinmerrell/my-first-project/public/images/)",
+      "Bash(cp \"/Users/justinmerrell/Documents/AB-Logos/AB logo horizontal_on white.svg\" /Users/justinmerrell/my-first-project/public/images/ab-logo-horizontal.svg)",
+      "Bash(cp \"/Users/justinmerrell/Documents/AB-Logos/AB logo stacked_on white.svg\" /Users/justinmerrell/my-first-project/public/images/ab-logo-stacked.svg)",
+      "Bash(gh auth:*)",
+      "Bash(git config:*)",
+      "Bash(git remote:*)",
+      "Bash(git add:*)",
+      "Bash(git rm:*)",
+      "Bash(git commit -m ':*)",
+      "Bash(rm -f /Users/justinmerrell/my-first-project/.git/index.lock)",
+      "Bash(git push:*)"
     ]
   }
 }

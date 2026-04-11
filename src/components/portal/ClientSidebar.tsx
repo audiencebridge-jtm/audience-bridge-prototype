@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { NewsletterSelector } from "@/components/portal/NewsletterSelector";
+import { MobileNav } from "@/components/shared/MobileNav";
 
 const navSections = [
   {
@@ -50,7 +51,8 @@ export function ClientSidebar() {
   };
 
   return (
-    <aside className="w-60 bg-white border-r border-gray-200 flex flex-col h-screen fixed left-0 top-0 overflow-y-auto">
+    <MobileNav>
+    <aside className="w-60 bg-white border-r border-gray-200 flex flex-col h-screen overflow-y-auto">
       <div className="px-5 py-4 border-b border-gray-200">
         <Link href="/portal" className="block">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -96,5 +98,6 @@ export function ClientSidebar() {
         </Link>
       </div>
     </aside>
+    </MobileNav>
   );
 }

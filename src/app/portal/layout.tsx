@@ -6,7 +6,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
     <NewsletterProvider>
       <div className="flex min-h-screen bg-gray-50">
         <ClientSidebar />
-        <main className="flex-1 ml-60 p-8">{children}</main>
+        <main className="flex-1 lg:ml-60 p-4 pt-16 lg:p-8 lg:pt-8">{children}</main>
       </div>
     </NewsletterProvider>
   );

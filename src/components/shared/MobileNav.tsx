@@ -40,7 +40,7 @@ export function MobileNav({ children }: MobileNavProps) {
       {/* Sidebar wrapper */}
       <div className={`
         fixed inset-y-0 left-0 z-50 transform transition-transform duration-200 ease-in-out
-        lg:translate-x-0 lg:static lg:z-auto
+        lg:translate-x-0 lg:z-auto
         ${open ? "translate-x-0" : "-translate-x-full"}
       `}>
         {/* Close button inside sidebar — mobile only */}

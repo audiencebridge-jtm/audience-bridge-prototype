@@ -10,11 +10,85 @@ import { companies, getCompanyHealthStatus, getLowestInventory, type Company, ty
 type HealthFilter = "all" | "critical" | "warning" | "healthy";
 type StatusFilter = "all" | "active" | "trial" | "suspended";
 
+function AddCompanyModal({ onClose }: { onClose: () => void }) {
+  const [submitted, setSubmitted] = useState(false);
+  const [name, setName] = useState("");
+
+  if (submitted) {
+    return (
+      <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center p-4" onClick={onClose}>
+        <div className="bg-white rounded-lg p-8 max-w-md w-full text-center" onClick={(e) => e.stopPropagation()}>
+          <svg className="w-12 h-12 text-green-500 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">Company Created</h3>
+          <p className="text-sm text-gray-600 mb-4">{name} has been added. Next, add newsletters and activate products.</p>
+          <button onClick={onClose} className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700">Done</button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center p-4" onClick={onClose}>
+      <div className="bg-white rounded-lg w-full max-w-lg" onClick={(e) => e.stopPropagation()}>
+        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+          <h3 className="font-semibold text-gray-900">Add New Company</h3>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+          </button>
+        </div>
+        <div className="p-6 space-y-4">
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Company Name *</label>
+            <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Acme Publishing" className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Contact Email *</label>
+            <input type="email" placeholder="team@company.com" className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm text-gray-700 mb-1">Plan</label>
+              <select className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option>Starter</option>
+                <option>Growth</option>
+                <option>Enterprise</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm text-gray-700 mb-1">Integration</label>
+              <select className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option>Sailthru</option>
+                <option>Beehiiv</option>
+                <option>Iterable</option>
+                <option>Customer.io</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Account Owner</label>
+            <select className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option>Justin Merrell</option>
+              <option>Chris Miquel</option>
+            </select>
+          </div>
+        </div>
+        <div className="px-6 py-4 border-t border-gray-200 flex justify-end gap-2">
+          <button onClick={onClose} className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50">Cancel</button>
+          <button onClick={() => name && setSubmitted(true)} className={`px-4 py-2 text-sm font-medium text-white rounded-md ${name ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-300 cursor-not-allowed"}`}>Create Company</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function CompaniesPage() {
   const router = useRouter();
   const [healthFilter, setHealthFilter] = useState<HealthFilter>("all");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [search, setSearch] = useState("");
+  const [showAddCompany, setShowAddCompany] = useState(false);
 
   const needsAttention = companies.filter((c) => getCompanyHealthStatus(c) !== "healthy").length;
   const totalProducts = companies.reduce((s, c) => s + Object.keys(c.products).length, 0);
@@ -41,7 +115,13 @@ export default function CompaniesPage() {
 
   return (
     <div>
-      <PageHeader title="Companies" subtitle="Operational overview of all publisher accounts" />
+      <PageHeader
+        title="Companies"
+        subtitle="Operational overview of all publisher accounts"
+        actions={<button onClick={() => setShowAddCompany(true)} className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700">+ Add Company</button>}
+      />
+
+      {showAddCompany && <AddCompanyModal onClose={() => setShowAddCompany(false)} />}
 
       {/* Summary Strip */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">

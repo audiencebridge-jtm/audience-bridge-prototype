@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/shared/PageHeader";
-import { SummaryCard, MetricCard } from "@/components/shared/MetricCard";
+import { SummaryCard } from "@/components/shared/MetricCard";
 import { AlertsPanel } from "@/components/admin/AlertsPanel";
 import {
   dashboardMetrics, companies, generateInventoryAlerts, getCompanyHealthStatus,
@@ -94,41 +94,66 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Revenue by Product */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <p className="text-xs text-gray-500">Smart Lead</p>
-          <p className="text-lg font-bold text-gray-900">${leadRevMonthly.toLocaleString(undefined, { maximumFractionDigits: 0 })}<span className="text-xs text-gray-400">/mo</span></p>
-          <p className="text-[10px] text-gray-400">${leadRevAllTime.toLocaleString(undefined, { maximumFractionDigits: 0 })} all time</p>
-        </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <p className="text-xs text-gray-500">Smart Pixel</p>
-          <p className="text-lg font-bold text-gray-900">${pixelRevMonthly.toLocaleString(undefined, { maximumFractionDigits: 0 })}<span className="text-xs text-gray-400">/mo</span></p>
-          <p className="text-[10px] text-gray-400">${pixelRevAllTime.toLocaleString(undefined, { maximumFractionDigits: 0 })} all time</p>
-        </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <p className="text-xs text-gray-500">Smart Reactivation</p>
-          <p className="text-lg font-bold text-gray-900">${reactRevMonthly.toLocaleString(undefined, { maximumFractionDigits: 0 })}<span className="text-xs text-gray-400">/mo</span></p>
-          <p className="text-[10px] text-gray-400">${reactRevAllTime.toLocaleString(undefined, { maximumFractionDigits: 0 })} all time</p>
-        </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <p className="text-xs text-gray-500">Smart Feed</p>
-          <p className="text-lg font-bold text-gray-900">${feedMRR.toLocaleString()}<span className="text-xs text-gray-400">/mo</span></p>
-          <p className="text-[10px] text-gray-400">recurring</p>
-        </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <p className="text-xs text-gray-500">Smart Delivery</p>
-          <p className="text-lg font-bold text-gray-900">${deliveryMRR.toLocaleString()}<span className="text-xs text-gray-400">/mo</span></p>
-          <p className="text-[10px] text-gray-400">recurring</p>
-        </div>
-      </div>
+      {/* Product Pulse + Revenue */}
+      <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Product Pulse</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        {[
+          { name: "Smart Lead", today: smartLeads.today, week: smartLeads.thisWeek, month: smartLeads.thisMonth, rate: LEAD_RATE },
+          { name: "Smart Pixel", today: sp.today, week: sp.thisWeek, month: sp.thisMonth, rate: avgPixelRate },
+          { name: "Smart Reactivation", today: sr.today, week: sr.thisWeek, month: sr.thisMonth, rate: MATCH_RATE },
+          { name: "Smart Feed", today: sf.last24Hours, week: sf.last24Hours * 7, month: sf.last24Hours * 30, rate: 0, mrr: feedMRR },
+        ].map((p) => (
+          <div key={p.name} className="bg-white rounded-lg border border-gray-200 p-5">
+            <h4 className="text-sm font-semibold text-gray-500 mb-3">{p.name}</h4>
+            <div className="grid grid-cols-3 gap-4 mb-3">
+              <div>
+                <p className="text-xl font-bold text-blue-600">{p.today.toLocaleString()}</p>
+                <p className="text-[10px] text-gray-400">Today</p>
+              </div>
+              <div>
+                <p className="text-xl font-bold text-blue-500">{p.week.toLocaleString()}</p>
+                <p className="text-[10px] text-gray-400">This Week</p>
+              </div>
+              <div>
+                <p className="text-xl font-bold text-green-600">{p.month.toLocaleString()}</p>
+                <p className="text-[10px] text-gray-400">This Month</p>
+              </div>
+            </div>
+            <div className="border-t border-gray-100 pt-3 grid grid-cols-3 gap-4">
+              <div>
+                <p className="text-sm font-semibold text-gray-900">${(p.mrr ? (p.mrr / 30) : p.today * p.rate).toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
+                <p className="text-[10px] text-gray-400">Rev Today</p>
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-gray-900">${(p.mrr ? (p.mrr / 4.33) : p.week * p.rate).toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
+                <p className="text-[10px] text-gray-400">Rev Week</p>
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-gray-900">${(p.mrr ? p.mrr : p.month * p.rate).toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
+                <p className="text-[10px] text-gray-400">Rev Month</p>
+              </div>
+            </div>
+          </div>
+        ))}
 
-      {/* Platform KPIs */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <SummaryCard title="Total Newsletters" value={summary.totalNewsletters} trend={{ value: "+2 this month", positive: true }} />
-        <SummaryCard title="Total Subscribers" value="2.9M" trend={{ value: "+3.2%", positive: true }} subtitle="vs last month" />
-        <SummaryCard title="New Subs Today" value={summary.newSubsToday} trend={{ value: "+12%", positive: true }} subtitle="vs yesterday" />
-        <SummaryCard title="Delivery Rate" value={`${summary.overallDeliveryRate}%`} trend={{ value: "+0.3%", positive: true }} subtitle="vs last week" />
+        {/* Smart Delivery — retainer/consulting */}
+        <Link href="/admin/products/smart-delivery" className="bg-white rounded-lg border border-gray-200 p-5 hover:border-blue-300 hover:shadow-sm transition-all">
+          <h4 className="text-sm font-semibold text-gray-500 mb-4">Smart Delivery</h4>
+          <div className="grid grid-cols-2 gap-6">
+            <div>
+              <p className="text-3xl font-bold text-blue-600">{companies.filter((c) => c.products.smartDelivery).length}</p>
+              <p className="text-xs text-gray-400 mt-1">Active Clients</p>
+            </div>
+            <div>
+              <p className="text-3xl font-bold text-green-600">${deliveryMRR.toLocaleString()}</p>
+              <p className="text-xs text-gray-400 mt-1">MRR</p>
+            </div>
+          </div>
+          <div className="border-t border-gray-100 mt-4 pt-3 flex items-center justify-between">
+            <p className="text-xs text-gray-400">${DELIVERY_MRR.toLocaleString()}/mo per client</p>
+            <span className="text-xs text-blue-600 font-medium">View Details →</span>
+          </div>
+        </Link>
       </div>
 
       {/* Alerts */}
@@ -157,60 +182,7 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* Newsletter Analytics (moved from Reporting) */}
-      <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Newsletter Analytics</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-        {reportingAnalytics.map((entry) => {
-          const nl = getNewsletterById(entry.newsletterId);
-          if (!nl) return null;
-          return (
-            <div key={entry.newsletterId} className="bg-white rounded-lg border border-gray-200 p-5">
-              <h4 className="font-semibold text-gray-900 mb-3">{nl.name}</h4>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-xs text-gray-500">Total Leads</p>
-                  <p className="text-xl font-bold text-gray-900">{entry.totalLeads}</p>
-                  <span className={`text-xs font-medium ${entry.positive ? "text-green-600" : "text-red-500"}`}>{entry.leadsTrend}</span>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500">CPES</p>
-                  <p className="text-xl font-bold text-gray-900">${entry.cpes.toFixed(2)}</p>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
 
-      {/* Product Pulse */}
-      <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Product Pulse</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <MetricCard title={productPulse.smartPixel.label} metrics={[
-          { label: "Today", value: productPulse.smartPixel.today, color: "text-blue-600" },
-          { label: "This Week", value: productPulse.smartPixel.thisWeek, color: "text-blue-500" },
-          { label: "This Month", value: productPulse.smartPixel.thisMonth, color: "text-green-600" },
-        ]} />
-        <MetricCard title={productPulse.smartFeed.label} metrics={[
-          { label: "Last 5 min", value: productPulse.smartFeed.last5Min, color: "text-blue-600" },
-          { label: "Last Hour", value: productPulse.smartFeed.lastHour, color: "text-blue-500" },
-          { label: "Last 24h", value: productPulse.smartFeed.last24Hours, color: "text-green-600" },
-        ]} />
-        <MetricCard title={productPulse.smartLeads.label} metrics={[
-          { label: "Today", value: productPulse.smartLeads.today, color: "text-blue-600" },
-          { label: "This Week", value: productPulse.smartLeads.thisWeek, color: "text-blue-500" },
-          { label: "This Month", value: productPulse.smartLeads.thisMonth, color: "text-yellow-600" },
-        ]} />
-        <MetricCard title={productPulse.smartReactivation.label} metrics={[
-          { label: "Today", value: productPulse.smartReactivation.today, color: "text-blue-600" },
-          { label: "This Week", value: productPulse.smartReactivation.thisWeek, color: "text-blue-500" },
-          { label: "All Time", value: productPulse.smartReactivation.allTime, color: "text-red-500" },
-        ]} />
-        <MetricCard title={productPulse.emailValidation.label} metrics={[
-          { label: "Last 5 min", value: productPulse.emailValidation.last5Min, color: "text-blue-600" },
-          { label: "Last Hour", value: productPulse.emailValidation.lastHour, color: "text-blue-500" },
-          { label: "Last 24h", value: productPulse.emailValidation.last24Hours, color: "text-green-600" },
-        ]} />
-      </div>
     </div>
   );
 }

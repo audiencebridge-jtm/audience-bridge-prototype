@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { SummaryCard, MetricCard } from "@/components/shared/MetricCard";
 import { StatusBadge } from "@/components/shared/StatusBadge";
-import { newsletters, companies, feedDomains } from "@/lib/mock-data";
+import { newsletters, companies, type Newsletter } from "@/lib/mock-data";
 
 const DELIVERY_MRR = 2_000;
 
@@ -77,30 +77,52 @@ export default function SmartDeliveryPage() {
         </>
       )}
 
-      <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Domain-Level Performance</h3>
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+      <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Delivery Metrics (Last 24 Hours)</h3>
+      <div className="bg-white rounded-lg border border-gray-200 overflow-x-auto">
         <table className="w-full">
           <thead>
             <tr className="bg-gray-50 border-b border-gray-200">
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Domain</th>
-              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase">Volume</th>
-              <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase">Engagement Rate</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Newsletter</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Company</th>
+              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase">Sent</th>
+              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase">Delivery</th>
+              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase">Open</th>
+              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase">Click</th>
+              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase">Unsub</th>
+              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase">Spam</th>
+              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase">Growth</th>
+              <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase">Eng. Rate</th>
               <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase">Health</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
-            {feedDomains.map((d) => (
-              <tr key={d.name} className="hover:bg-gray-50">
-                <td className="px-4 py-3 text-sm font-medium text-gray-900">{d.name}</td>
-                <td className="px-4 py-3 text-sm text-gray-700 text-right">{d.availability.toLocaleString()}</td>
+            {deliveryNewsletters.map((n: Newsletter) => (
+              <tr key={n.id} onClick={() => router.push(`/admin/newsletters/${n.id}`)} className="cursor-pointer hover:bg-blue-50 transition-colors">
+                <td className="px-4 py-3 text-sm font-medium text-gray-900">{n.name}</td>
+                <td className="px-4 py-3 text-sm text-gray-600">{n.companyName}</td>
+                <td className="px-4 py-3 text-sm text-gray-700 text-right">{n.sent.toLocaleString()}</td>
+                <td className="px-4 py-3 text-sm text-right font-medium">
+                  <span className={n.deliveryRate >= 97 ? "text-green-600" : n.deliveryRate >= 95 ? "text-yellow-600" : "text-red-600"}>{n.deliveryRate}%</span>
+                </td>
+                <td className="px-4 py-3 text-sm text-gray-700 text-right">{n.openRate}%</td>
+                <td className="px-4 py-3 text-sm text-gray-700 text-right">{n.clickRate}%</td>
+                <td className="px-4 py-3 text-sm text-right">
+                  <span className={n.unsubRate >= 0.05 ? "text-red-600" : "text-gray-700"}>{n.unsubRate}%</span>
+                </td>
+                <td className="px-4 py-3 text-sm text-right">
+                  <span className={n.spamRate >= 0.03 ? "text-red-600" : "text-gray-700"}>{n.spamRate}%</span>
+                </td>
+                <td className="px-4 py-3 text-sm text-right">
+                  <span className={n.growth >= 0 ? "text-green-600" : "text-red-600"}>{n.growth >= 0 ? "+" : ""}{n.growth}%</span>
+                </td>
                 <td className="px-4 py-3 text-center">
                   <span className={`inline-block px-2 py-0.5 rounded text-xs font-semibold text-white ${
-                    d.engagementRate >= 30 ? "bg-green-500" : d.engagementRate >= 20 ? "bg-yellow-500" : "bg-red-500"
-                  }`}>{d.engagementRate}%</span>
+                    n.engagementRate >= 30 ? "bg-green-500" : n.engagementRate >= 20 ? "bg-yellow-500" : "bg-red-500"
+                  }`}>{n.engagementRate}%</span>
                 </td>
                 <td className="px-4 py-3 text-center">
                   <span className={`inline-block w-3 h-3 rounded-full ${
-                    d.engagementRate >= 25 ? "bg-green-500" : d.engagementRate >= 15 ? "bg-yellow-500" : "bg-red-500"
+                    n.deliverabilityScore >= 97 ? "bg-green-500" : n.deliverabilityScore >= 95 ? "bg-yellow-500" : "bg-red-500"
                   }`} />
                 </td>
               </tr>

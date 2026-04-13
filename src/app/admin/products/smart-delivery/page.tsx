@@ -1,26 +1,45 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { SummaryCard, MetricCard } from "@/components/shared/MetricCard";
 import { StatusBadge } from "@/components/shared/StatusBadge";
-import { newsletters, companies, type Newsletter } from "@/lib/mock-data";
+import { TimeRangeFilter, type TimeRange } from "@/components/shared/TimeRangeFilter";
+import { FilterDropdown } from "@/components/shared/FilterDropdown";
+import { newsletters, companies, type Newsletter, getNewsletterMetricsForRange } from "@/lib/mock-data";
 
 const DELIVERY_MRR = 2_000;
 
 export default function SmartDeliveryPage() {
   const router = useRouter();
+  const [range, setRange] = useState<TimeRange>("24h");
+  const [newsletterFilter, setNewsletterFilter] = useState("all");
+
   const deliveryNewsletters = newsletters.filter((n) => n.activeProducts.includes("Smart Delivery") || n.activeProducts.includes("Smart Feed"));
   const deliveryCompanies = companies.filter((c) => c.products.smartDelivery);
 
-  // For companies without explicit smartDelivery inventory, we track by newsletter count
-  // In practice, delivery is a retainer per company
+  const newsletterOptions = [
+    { label: "All Newsletters", value: "all" },
+    ...deliveryNewsletters.map((n) => ({ label: `${n.name} (${n.companyName})`, value: n.id })),
+  ];
+
+  const filteredNewsletters = newsletterFilter === "all"
+    ? deliveryNewsletters
+    : deliveryNewsletters.filter((n) => n.id === newsletterFilter);
+
   const totalMRR = deliveryCompanies.length * DELIVERY_MRR;
   const totalSubscribers = deliveryCompanies.reduce((s, c) => s + c.totalSubscribers, 0);
 
+  const rangeLabel = { "24h": "Last 24 Hours", "7d": "Last 7 Days", "30d": "Last 30 Days", "90d": "Last 90 Days", "ytd": "Year to Date", "all": "All Time" }[range];
+
   return (
     <div>
-      <PageHeader title="Smart Delivery" subtitle="Diagnose. Deliver. Dominate. Get your emails to inbox and engage." />
+      <PageHeader
+        title="Smart Delivery"
+        subtitle="Diagnose. Deliver. Dominate. Get your emails to inbox and engage."
+        actions={<TimeRangeFilter value={range} onChange={setRange} />}
+      />
 
       {/* Revenue & Business KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -77,7 +96,14 @@ export default function SmartDeliveryPage() {
         </>
       )}
 
-      <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Delivery Metrics (Last 24 Hours)</h3>
+      {/* Newsletter filter */}
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-3">
+        <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
+          Delivery Metrics — {rangeLabel}
+          <span className="text-gray-400 font-normal ml-2">({filteredNewsletters.length} newsletters)</span>
+        </h3>
+        <FilterDropdown label="Newsletter" value={newsletterFilter} options={newsletterOptions} onChange={setNewsletterFilter} />
+      </div>
       <div className="bg-white rounded-lg border border-gray-200 overflow-x-auto">
         <table className="w-full">
           <thead>
@@ -96,37 +122,40 @@ export default function SmartDeliveryPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
-            {deliveryNewsletters.map((n: Newsletter) => (
-              <tr key={n.id} onClick={() => router.push(`/admin/newsletters/${n.id}`)} className="cursor-pointer hover:bg-blue-50 transition-colors">
-                <td className="px-4 py-3 text-sm font-medium text-gray-900">{n.name}</td>
-                <td className="px-4 py-3 text-sm text-gray-600">{n.companyName}</td>
-                <td className="px-4 py-3 text-sm text-gray-700 text-right">{n.sent.toLocaleString()}</td>
-                <td className="px-4 py-3 text-sm text-right font-medium">
-                  <span className={n.deliveryRate >= 97 ? "text-green-600" : n.deliveryRate >= 95 ? "text-yellow-600" : "text-red-600"}>{n.deliveryRate}%</span>
-                </td>
-                <td className="px-4 py-3 text-sm text-gray-700 text-right">{n.openRate}%</td>
-                <td className="px-4 py-3 text-sm text-gray-700 text-right">{n.clickRate}%</td>
-                <td className="px-4 py-3 text-sm text-right">
-                  <span className={n.unsubRate >= 0.05 ? "text-red-600" : "text-gray-700"}>{n.unsubRate}%</span>
-                </td>
-                <td className="px-4 py-3 text-sm text-right">
-                  <span className={n.spamRate >= 0.03 ? "text-red-600" : "text-gray-700"}>{n.spamRate}%</span>
-                </td>
-                <td className="px-4 py-3 text-sm text-right">
-                  <span className={n.growth >= 0 ? "text-green-600" : "text-red-600"}>{n.growth >= 0 ? "+" : ""}{n.growth}%</span>
-                </td>
-                <td className="px-4 py-3 text-center">
-                  <span className={`inline-block px-2 py-0.5 rounded text-xs font-semibold text-white ${
-                    n.engagementRate >= 30 ? "bg-green-500" : n.engagementRate >= 20 ? "bg-yellow-500" : "bg-red-500"
-                  }`}>{n.engagementRate}%</span>
-                </td>
-                <td className="px-4 py-3 text-center">
-                  <span className={`inline-block w-3 h-3 rounded-full ${
-                    n.deliverabilityScore >= 97 ? "bg-green-500" : n.deliverabilityScore >= 95 ? "bg-yellow-500" : "bg-red-500"
-                  }`} />
-                </td>
-              </tr>
-            ))}
+            {filteredNewsletters.map((n: Newsletter) => {
+              const m = getNewsletterMetricsForRange(n, range);
+              return (
+                <tr key={n.id} onClick={() => router.push(`/admin/newsletters/${n.id}`)} className="cursor-pointer hover:bg-blue-50 transition-colors">
+                  <td className="px-4 py-3 text-sm font-medium text-gray-900">{n.name}</td>
+                  <td className="px-4 py-3 text-sm text-gray-600">{n.companyName}</td>
+                  <td className="px-4 py-3 text-sm text-gray-700 text-right">{m.sent.toLocaleString()}</td>
+                  <td className="px-4 py-3 text-sm text-right font-medium">
+                    <span className={m.deliveryRate >= 97 ? "text-green-600" : m.deliveryRate >= 95 ? "text-yellow-600" : "text-red-600"}>{m.deliveryRate}%</span>
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-700 text-right">{m.openRate}%</td>
+                  <td className="px-4 py-3 text-sm text-gray-700 text-right">{m.clickRate}%</td>
+                  <td className="px-4 py-3 text-sm text-right">
+                    <span className={n.unsubRate >= 0.05 ? "text-red-600" : "text-gray-700"}>{n.unsubRate}%</span>
+                  </td>
+                  <td className="px-4 py-3 text-sm text-right">
+                    <span className={n.spamRate >= 0.03 ? "text-red-600" : "text-gray-700"}>{n.spamRate}%</span>
+                  </td>
+                  <td className="px-4 py-3 text-sm text-right">
+                    <span className={n.growth >= 0 ? "text-green-600" : "text-red-600"}>{n.growth >= 0 ? "+" : ""}{n.growth}%</span>
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    <span className={`inline-block px-2 py-0.5 rounded text-xs font-semibold text-white ${
+                      n.engagementRate >= 30 ? "bg-green-500" : n.engagementRate >= 20 ? "bg-yellow-500" : "bg-red-500"
+                    }`}>{n.engagementRate}%</span>
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    <span className={`inline-block w-3 h-3 rounded-full ${
+                      n.deliverabilityScore >= 97 ? "bg-green-500" : n.deliverabilityScore >= 95 ? "bg-yellow-500" : "bg-red-500"
+                    }`} />
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

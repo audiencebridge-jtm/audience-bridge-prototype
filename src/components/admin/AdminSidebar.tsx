@@ -7,7 +7,10 @@ import { MobileNav } from "@/components/shared/MobileNav";
 const navSections: { heading: string; items: { label: string; href: string }[] }[] = [
   {
     heading: "Overview",
-    items: [{ label: "Dashboard", href: "/admin" }],
+    items: [
+      { label: "Dashboard", href: "/admin" },
+      { label: "Reporting", href: "/admin/reporting" },
+    ],
   },
   {
     heading: "Customers",

@@ -1,11 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { SummaryCard, MetricCard } from "@/components/shared/MetricCard";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { TabNav } from "@/components/shared/TabNav";
-import { dashboardMetrics, newsletters, companies, getNewslettersByCompany } from "@/lib/mock-data";
+import { TimeRangeFilter, type TimeRange } from "@/components/shared/TimeRangeFilter";
+import { FilterDropdown } from "@/components/shared/FilterDropdown";
+import { dashboardMetrics, newsletters, companies, getNewslettersByCompany, getNewsletterMetricsForRange, scaleForRange } from "@/lib/mock-data";
 
 const LEAD_RATE = 0.50;
 
@@ -162,9 +165,22 @@ function PerformanceTab() {
 }
 
 export default function SmartLeadPage() {
+  const router = useRouter();
+  const [range, setRange] = useState<TimeRange>("30d");
+  const [newsletterFilter, setNewsletterFilter] = useState("all");
+
   const metrics = dashboardMetrics.productPulse.smartLeads;
   const leadNewsletters = newsletters.filter((n) => n.activeProducts.includes("Smart Lead"));
   const leadCompanies = companies.filter((c) => c.products.smartLead);
+
+  const newsletterOptions = [
+    { label: "All Newsletters", value: "all" },
+    ...leadNewsletters.map((n) => ({ label: `${n.name} (${n.companyName})`, value: n.id })),
+  ];
+
+  const filteredNewsletters = newsletterFilter === "all"
+    ? leadNewsletters
+    : leadNewsletters.filter((n) => n.id === newsletterFilter);
 
   const activeClients = leadCompanies.filter((c) => (c.products.smartLead?.dailyUsage ?? 0) >= 5).length;
   const pausedClients = leadCompanies.filter((c) => (c.products.smartLead?.dailyUsage ?? 0) < 5).length;
@@ -179,12 +195,14 @@ export default function SmartLeadPage() {
   const revMonth = metrics.thisMonth * LEAD_RATE;
   const revAllTime = metrics.allTime * LEAD_RATE;
 
+  const rangeLabel = { "24h": "Today", "7d": "This Week", "30d": "This Month", "90d": "This Quarter", "ytd": "Year to Date", "all": "All Time" }[range];
+
   return (
     <div>
       <PageHeader
         title="Smart Lead"
         subtitle="Recommend audience-targeted newsletter subscribers for deeper activation"
-        actions={<button className="px-4 py-2 bg-green-500 text-white text-sm font-medium rounded-md hover:bg-green-600">+ Add Record</button>}
+        actions={<TimeRangeFilter value={range} onChange={setRange} />}
       />
 
       {/* Business KPIs */}
@@ -236,6 +254,58 @@ export default function SmartLeadPage() {
             { label: "Performance", content: <PerformanceTab /> },
           ]}
         />
+      </div>
+
+      {/* Newsletter Delivery Metrics */}
+      <div className="flex flex-wrap items-center justify-between gap-4 mt-6 mb-3">
+        <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
+          Newsletter Metrics — {rangeLabel}
+          <span className="text-gray-400 font-normal ml-2">({filteredNewsletters.length} newsletters)</span>
+        </h3>
+        <FilterDropdown label="Newsletter" value={newsletterFilter} options={newsletterOptions} onChange={setNewsletterFilter} />
+      </div>
+      <div className="bg-white rounded-lg border border-gray-200 overflow-x-auto">
+        <table className="w-full">
+          <thead>
+            <tr className="bg-gray-50 border-b border-gray-200">
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Newsletter</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Company</th>
+              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase">Sent</th>
+              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase">Delivery</th>
+              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase">Open</th>
+              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase">Click</th>
+              <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase">Eng. Rate</th>
+              <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase">Health</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100">
+            {filteredNewsletters.map((n) => {
+              const m = getNewsletterMetricsForRange(n, range);
+              return (
+                <tr key={n.id} onClick={() => router.push(`/admin/newsletters/${n.id}`)} className="cursor-pointer hover:bg-blue-50 transition-colors">
+                  <td className="px-4 py-3 text-sm font-medium text-gray-900">{n.name}</td>
+                  <td className="px-4 py-3 text-sm text-gray-600">{n.companyName}</td>
+                  <td className="px-4 py-3 text-sm text-gray-700 text-right">{m.sent.toLocaleString()}</td>
+                  <td className="px-4 py-3 text-sm text-right font-medium">
+                    <span className={m.deliveryRate >= 97 ? "text-green-600" : m.deliveryRate >= 95 ? "text-yellow-600" : "text-red-600"}>{m.deliveryRate}%</span>
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-700 text-right">{m.openRate}%</td>
+                  <td className="px-4 py-3 text-sm text-gray-700 text-right">{m.clickRate}%</td>
+                  <td className="px-4 py-3 text-center">
+                    <span className={`inline-block px-2 py-0.5 rounded text-xs font-semibold text-white ${
+                      n.engagementRate >= 30 ? "bg-green-500" : n.engagementRate >= 20 ? "bg-yellow-500" : "bg-red-500"
+                    }`}>{n.engagementRate}%</span>
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    <span className={`inline-block w-3 h-3 rounded-full ${
+                      n.deliverabilityScore >= 97 ? "bg-green-500" : n.deliverabilityScore >= 95 ? "bg-yellow-500" : "bg-red-500"
+                    }`} />
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
     </div>
   );

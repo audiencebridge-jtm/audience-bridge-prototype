@@ -582,6 +582,69 @@ export const reportingAnalytics = [
   { newsletterId: "6", totalLeads: 341, cpes: 0.92, leadsTrend: "+18%", positive: true },
 ];
 
+// ─── Time-Range Scaling ─────────────────────────────────────
+// Simulates data for different time ranges by scaling the base daily values
+// with realistic variance. In production this would be a ClickHouse query.
+export type TimeRange = "24h" | "7d" | "30d" | "90d" | "ytd" | "all";
+
+const rangeMultipliers: Record<TimeRange, number> = {
+  "24h": 1,
+  "7d": 7,
+  "30d": 30,
+  "90d": 90,
+  "ytd": 103, // ~Apr 13 = day 103 of year
+  "all": 240, // ~8 months since first newsletter
+};
+
+// Adds slight variance so numbers don't look perfectly multiplied
+function vary(base: number, mult: number, variance = 0.08): number {
+  const jitter = 1 + (Math.sin(base * 7 + mult * 13) * variance);
+  return Math.round(base * mult * jitter);
+}
+
+export function scaleForRange(dailyValue: number, range: TimeRange): number {
+  return vary(dailyValue, rangeMultipliers[range]);
+}
+
+// Get product pulse metrics scaled to a time range
+export function getProductPulseForRange(range: TimeRange) {
+  const m = rangeMultipliers[range];
+  const { smartLeads, smartPixel, smartReactivation, smartFeed, emailValidation } = dashboardMetrics.productPulse;
+  return {
+    smartLeads: { units: vary(smartLeads.today, m), revenue: vary(smartLeads.today, m) * 0.50 },
+    smartPixel: { units: vary(smartPixel.today, m), revenue: vary(smartPixel.today, m) * 0.15 },
+    smartReactivation: { units: vary(smartReactivation.today, m), revenue: vary(smartReactivation.today, m) * 0.02 },
+    smartFeed: { units: vary(smartFeed.last24Hours, m), revenue: 0 }, // MRR-based
+    emailValidation: { units: vary(emailValidation.last24Hours, m), revenue: 0 },
+  };
+}
+
+// Get system event totals scaled to a time range
+export function getSystemEventsForRange(range: TimeRange) {
+  const m = rangeMultipliers[range];
+  const { clickEvents, partnerClickSignals, eventsToday } = dashboardMetrics.systemMetrics;
+  return {
+    clickEvents: vary(clickEvents.today, m),
+    partnerSignals: vary(partnerClickSignals.today, m),
+    sent: vary(eventsToday.sent, m),
+    opens: vary(eventsToday.opens, m),
+    clicks: vary(eventsToday.clicks, m),
+  };
+}
+
+// Get newsletter delivery metrics scaled to a time range
+export function getNewsletterMetricsForRange(newsletter: Newsletter, range: TimeRange) {
+  const m = rangeMultipliers[range];
+  return {
+    ...newsletter,
+    sent: vary(newsletter.sent, m),
+    // Rates stay roughly the same regardless of range (they're percentages)
+    deliveryRate: +(newsletter.deliveryRate + Math.sin(m) * 0.3).toFixed(1),
+    openRate: +(newsletter.openRate + Math.sin(m * 2) * 0.5).toFixed(1),
+    clickRate: +(newsletter.clickRate + Math.sin(m * 3) * 0.2).toFixed(1),
+  };
+}
+
 // ─── Helper Functions ────────────────────────────────────────
 export function formatNumber(n: number): string {
   return n.toLocaleString();

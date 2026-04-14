@@ -4,6 +4,7 @@ import { SummaryCard } from "@/components/shared/MetricCard";
 import { AlertsPanel } from "@/components/admin/AlertsPanel";
 import {
   dashboardMetrics, companies, generateInventoryAlerts, getCompanyHealthStatus,
+  getSystemEventsForRange,
 } from "@/lib/mock-data";
 
 const LEAD_RATE = 0.50;
@@ -62,6 +63,10 @@ export default function AdminDashboard() {
   const revMonthly = leadRevMonthly + pixelRevMonthly + reactRevMonthly + recurringMRR;
   const revQuarterly = revMonthly * 3;
   const revYearly = revMonthly * 12;
+
+  // System events — real-time operational pulse
+  const events = getSystemEventsForRange("24h");
+  const eventsWeek = getSystemEventsForRange("7d");
 
   return (
     <div>
@@ -152,6 +157,26 @@ export default function AdminDashboard() {
             <span className="text-xs text-blue-600 font-medium">View Details →</span>
           </div>
         </Link>
+      </div>
+
+      {/* System Events — Operational Pulse */}
+      <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Signal Loop</h2>
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
+        {[
+          { label: "Emails Sent", today: events.sent, week: eventsWeek.sent },
+          { label: "Opens", today: events.opens, week: eventsWeek.opens },
+          { label: "Clicks", today: events.clicks, week: eventsWeek.clicks },
+          { label: "Click Events", today: events.clickEvents, week: eventsWeek.clickEvents },
+          { label: "Partner Signals", today: events.partnerSignals, week: eventsWeek.partnerSignals },
+        ].map((e) => (
+          <div key={e.label} className="bg-white rounded-lg border border-gray-200 p-4">
+            <p className="text-xs font-medium text-gray-500">{e.label}</p>
+            <p className="text-xl font-bold text-gray-900 mt-1">{e.today.toLocaleString()}</p>
+            <p className="text-[10px] text-gray-400 mt-0.5">Today</p>
+            <p className="text-sm font-semibold text-gray-600 mt-2">{e.week.toLocaleString()}</p>
+            <p className="text-[10px] text-gray-400">This Week</p>
+          </div>
+        ))}
       </div>
 
       {/* Alerts */}

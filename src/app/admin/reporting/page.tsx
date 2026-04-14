@@ -7,7 +7,7 @@ import { TimeRangeFilter, type TimeRange } from "@/components/shared/TimeRangeFi
 import { FilterDropdown } from "@/components/shared/FilterDropdown";
 import {
   newsletters, companies, type Newsletter,
-  getProductPulseForRange, getSystemEventsForRange, getNewsletterMetricsForRange,
+  getProductPulseForRange, getNewsletterMetricsForRange,
   scaleForRange,
 } from "@/lib/mock-data";
 
@@ -65,7 +65,6 @@ export default function ReportingPage() {
 
   // Scaled metrics
   const pulse = getProductPulseForRange(range);
-  const events = getSystemEventsForRange(range);
 
   // Revenue
   const feedMRR = companies.reduce((s, c) => c.products.smartFeed ? s + getFeedMRR(c.products.smartFeed.dailyUsage) : s, 0);
@@ -153,23 +152,6 @@ export default function ReportingPage() {
               <p className="text-lg font-bold text-green-600">${p.revenue.toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
               <p className="text-xs text-gray-400">revenue ({rangeLabel.toLowerCase()})</p>
             </div>
-          </div>
-        ))}
-      </div>
-
-      {/* System Events */}
-      <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">System Events — {rangeLabel}</h2>
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
-        {[
-          { label: "Emails Sent", value: events.sent },
-          { label: "Opens", value: events.opens },
-          { label: "Clicks", value: events.clicks },
-          { label: "Click Events", value: events.clickEvents },
-          { label: "Partner Signals", value: events.partnerSignals },
-        ].map((e) => (
-          <div key={e.label} className="bg-white rounded-lg border border-gray-200 p-4">
-            <p className="text-xs font-medium text-gray-500">{e.label}</p>
-            <p className="text-xl font-bold text-gray-900 mt-1">{e.value.toLocaleString()}</p>
           </div>
         ))}
       </div>

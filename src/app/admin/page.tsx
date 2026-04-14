@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { SummaryCard } from "@/components/shared/MetricCard";
-import { AlertsPanel } from "@/components/admin/AlertsPanel";
+import { AdminHealthBar } from "@/components/admin/AdminHealthBar";
+import { AdminGroupedAlerts } from "@/components/admin/AdminGroupedAlerts";
 import {
-  dashboardMetrics, companies, generateInventoryAlerts, getCompanyHealthStatus,
+  dashboardMetrics, companies, generateInventoryAlerts,
   getSystemEventsForRange,
 } from "@/lib/mock-data";
 
@@ -26,7 +27,7 @@ function getFeedMRR(dailyUsage: number): number {
 export default function AdminDashboard() {
   const { summary, productPulse } = dashboardMetrics;
   const alerts = generateInventoryAlerts(companies);
-  const attentionCompanies = companies.filter((c) => getCompanyHealthStatus(c) !== "healthy");
+
 
   // Revenue calculations — per-unit products use activity * rate
   const { smartLeads, smartPixel: sp, smartReactivation: sr, smartFeed: sf } = productPulse;
@@ -73,6 +74,11 @@ export default function AdminDashboard() {
   return (
     <div>
       <PageHeader title="Dashboard" subtitle="Audience Bridge Admin Overview" />
+
+      <AdminHealthBar />
+
+      {/* Grouped Alerts — right after health bar for immediate triage */}
+      <AdminGroupedAlerts alerts={alerts} />
 
       {/* Revenue Summary */}
       <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Revenue</h2>
@@ -162,7 +168,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Signal Loop */}
-      <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Signal Loop</h2>
+      <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Signal Loop & DTM KPI's</h2>
 
       {/* Publisher Signals — top row */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
@@ -261,31 +267,6 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Alerts */}
-      <div className="mb-6">
-        <AlertsPanel alerts={alerts} />
-      </div>
-
-      {/* Companies Needing Attention */}
-      {attentionCompanies.length > 0 && (
-        <div className="mb-6">
-          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Companies Needing Attention</h2>
-          <div className="flex flex-wrap gap-2">
-            {attentionCompanies.map((c) => {
-              const health = getCompanyHealthStatus(c);
-              return (
-                <Link key={c.id} href={`/admin/companies/${c.id}`}
-                  className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg border text-sm font-medium transition-colors hover:shadow-sm ${
-                    health === "critical" ? "bg-red-50 border-red-200 text-red-700 hover:bg-red-100" : "bg-yellow-50 border-yellow-200 text-yellow-700 hover:bg-yellow-100"
-                  }`}>
-                  <span className={`w-2 h-2 rounded-full ${health === "critical" ? "bg-red-500" : "bg-yellow-500"}`} />
-                  {c.name}
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

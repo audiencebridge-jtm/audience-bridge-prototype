@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { NewsletterSelector } from "@/components/portal/NewsletterSelector";
 import { MobileNav } from "@/components/shared/MobileNav";
-import { portalProducts } from "@/lib/mock-data";
+import { portalProducts, notifications } from "@/lib/mock-data";
 import type { LucideIcon } from "lucide-react";
 import {
   LayoutDashboard,
@@ -81,6 +81,17 @@ function showNewsletterSelector(pathname: string) {
   return productPaths.some((p) => pathname.startsWith(p));
 }
 
+const unreadNotificationCount = notifications.filter((n) => !n.read).length;
+
+function NotificationBadge({ href }: { href: string }) {
+  if (href !== "/portal/notifications" || unreadNotificationCount === 0) return null;
+  return (
+    <span className="ml-auto text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-red-500 text-white min-w-[20px] text-center">
+      {unreadNotificationCount}
+    </span>
+  );
+}
+
 function ProductBadge({ href }: { href: string }) {
   const productKey = hrefToProductKey[href];
   if (!productKey) return null;
@@ -154,6 +165,7 @@ export function ClientSidebar() {
                       <Icon className={`w-4 h-4 shrink-0 ${active ? "text-[#0097FF]" : "text-gray-400"}`} />
                       <span className="truncate">{item.label}</span>
                       <ProductBadge href={item.href} />
+                      <NotificationBadge href={item.href} />
                     </Link>
                   </li>
                 );

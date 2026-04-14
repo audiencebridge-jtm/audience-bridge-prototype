@@ -491,22 +491,152 @@ export const apiCredentials = {
 };
 
 // ─── Notifications ──────────────────────────────────────────
+export type NotificationSeverity = "action_needed" | "heads_up" | "good_news" | "info";
+export type NotificationCategory = "source_low" | "delivery_issue" | "source_performance" | "feed_volume" | "lead_delivery" | "reactivation" | "billing" | "system";
+
 export interface Notification {
   id: string;
   type: "success" | "warning" | "info" | "error";
+  severity: NotificationSeverity;
+  category: NotificationCategory;
   message: string;
+  newsletter?: string;
+  product?: string;
+  detail?: string;
   timestamp: string;
   read: boolean;
+  actionLabel?: string;
+  actionHref?: string;
 }
 
 export const notifications: Notification[] = [
-  { id: "n1", type: "success", message: "Smart Lead delivery completed for Daily Skrape — 253 leads delivered", timestamp: "2026-04-10 09:15", read: false },
-  { id: "n2", type: "warning", message: "6AM - NOOGA Smart Lead feed running low (963 available)", timestamp: "2026-04-10 08:30", read: false },
-  { id: "n3", type: "info", message: "Your April billing statement is ready — $4,500.00", timestamp: "2026-04-09 14:00", read: true },
-  { id: "n4", type: "success", message: "Smart Reactivation matched 1,240 subscribers for Healthy Happy News", timestamp: "2026-04-09 10:22", read: true },
-  { id: "n5", type: "error", message: "API endpoint returned 429 for Liberty Surveys — rate limit exceeded", timestamp: "2026-04-08 19:42", read: true },
-  { id: "n6", type: "info", message: "Monthly performance report generated for all newsletters", timestamp: "2026-04-08 06:00", read: true },
+  // Source Data Running Low — the big offender (simulates 8+ near-identical alerts)
+  { id: "n1", type: "warning", severity: "heads_up", category: "source_low", message: "Source ATTR - 6AM DNA will be out of leads for AT&T in the next few days.", newsletter: "Daily Skrape", product: "Smart Lead", detail: "AT&T — 2 days remaining", timestamp: "2026-04-13 08:30", read: false, actionLabel: "Review", actionHref: "/portal/smart-lead" },
+  { id: "n2", type: "warning", severity: "heads_up", category: "source_low", message: "Source ATTR - 6AM DNA will be out of leads for DiMar in the next few days.", newsletter: "Daily Skrape", product: "Smart Lead", detail: "DiMar — 3 days remaining", timestamp: "2026-04-13 08:30", read: false, actionLabel: "Review", actionHref: "/portal/smart-lead" },
+  { id: "n3", type: "warning", severity: "heads_up", category: "source_low", message: "Source ATTR - 6AM DNA will be out of leads for Gmail in the next few days.", newsletter: "Daily Skrape", product: "Smart Lead", detail: "Gmail — 4 days remaining", timestamp: "2026-04-13 08:25", read: false, actionLabel: "Review", actionHref: "/portal/smart-lead" },
+  { id: "n4", type: "warning", severity: "heads_up", category: "source_low", message: "Source ATTR - 6AM DNA will be out of leads for Verizon in the next few days.", newsletter: "Daily Skrape", product: "Smart Lead", detail: "Verizon — 3 days remaining", timestamp: "2026-04-13 08:25", read: false, actionLabel: "Review", actionHref: "/portal/smart-lead" },
+  { id: "n5", type: "warning", severity: "heads_up", category: "source_low", message: "Source ATTR - 6AM DNA will be out of leads for Microsoft in the next few days.", newsletter: "Daily Skrape", product: "Smart Lead", detail: "Microsoft — 5 days remaining", timestamp: "2026-04-13 08:20", read: false, actionLabel: "Review", actionHref: "/portal/smart-lead" },
+  { id: "n6", type: "warning", severity: "heads_up", category: "source_low", message: "Source Flyover States - Net New will be out of leads for Gmail in the next few days.", newsletter: "Fit With Age", product: "Smart Lead", detail: "Gmail — 2 days remaining", timestamp: "2026-04-13 07:45", read: false, actionLabel: "Review", actionHref: "/portal/smart-lead" },
+  { id: "n7", type: "warning", severity: "heads_up", category: "source_low", message: "Source Flyover States - Net New will be out of leads for Yahoo in the next few days.", newsletter: "Fit With Age", product: "Smart Lead", detail: "Yahoo — 4 days remaining", timestamp: "2026-04-13 07:45", read: false, actionLabel: "Review", actionHref: "/portal/smart-lead" },
+  { id: "n8", type: "warning", severity: "heads_up", category: "source_low", message: "Source Flyover States - Net New will be out of leads for Outlook in the next few days.", newsletter: "Fit With Age", product: "Smart Lead", detail: "Outlook — 6 days remaining", timestamp: "2026-04-13 07:40", read: false, actionLabel: "Review", actionHref: "/portal/smart-lead" },
+  { id: "n9", type: "warning", severity: "heads_up", category: "source_low", message: "Source ATTR - SANI DNA will be out of leads for Gmail in the next few days.", newsletter: "Daily Brain Buster", product: "Smart Lead", detail: "Gmail — 3 days remaining", timestamp: "2026-04-12 14:00", read: true, actionLabel: "Review", actionHref: "/portal/smart-lead" },
+  { id: "n10", type: "warning", severity: "heads_up", category: "source_low", message: "Source ATTR - SANI DNA will be out of leads for AT&T in the next few days.", newsletter: "Daily Brain Buster", product: "Smart Lead", detail: "AT&T — 5 days remaining", timestamp: "2026-04-12 14:00", read: true, actionLabel: "Review", actionHref: "/portal/smart-lead" },
+
+  // Delivery Issues — action required
+  { id: "n11", type: "error", severity: "action_needed", category: "delivery_issue", message: "Delivery Rate 30.89% fell below 95% for Comcast.", newsletter: "Daily Skrape", product: "Smart Delivery", detail: "Recommend lowering Comcast heads and tightening up on your Comcast sending segments.", timestamp: "2026-04-13 06:00", read: false, actionLabel: "Fix Now", actionHref: "/portal/smart-delivery" },
+  { id: "n12", type: "error", severity: "action_needed", category: "delivery_issue", message: "Delivery Rate 17.65% fell below 95% for Spectrum.", newsletter: "Daily Skrape", product: "Smart Delivery", detail: "Recommend lowering Spectrum heads and tightening up on your Spectrum sending segments.", timestamp: "2026-04-13 06:00", read: false, actionLabel: "Fix Now", actionHref: "/portal/smart-delivery" },
+
+  // Outstanding Source Performance — good news
+  { id: "n13", type: "success", severity: "good_news", category: "source_performance", message: "Source Flyover States - Net New has an engagement rate of 92.9%.", newsletter: "Fit With Age", product: "Smart Lead", detail: "Look to increase volume from this source.", timestamp: "2026-04-12 10:00", read: true, actionLabel: "Details", actionHref: "/portal/smart-lead" },
+  { id: "n14", type: "success", severity: "good_news", category: "source_performance", message: "Source ME - Sable has an engagement rate of 91.6%.", newsletter: "Fit With Age", product: "Smart Lead", detail: "Look to increase volume from this source.", timestamp: "2026-04-12 10:00", read: true, actionLabel: "Details", actionHref: "/portal/smart-lead" },
+
+  // Smart Feed volume change
+  { id: "n15", type: "warning", severity: "heads_up", category: "feed_volume", message: "Smart Feed volume decreased by 14,869.", newsletter: "Daily Skrape", product: "Smart Feed", detail: "Review if any sources have run out of leads.", timestamp: "2026-04-12 07:00", read: true, actionLabel: "Review", actionHref: "/portal/smart-feed" },
+
+  // Lead deliveries — good news
+  { id: "n16", type: "success", severity: "good_news", category: "lead_delivery", message: "Smart Lead delivery completed for Daily Skrape — 253 leads delivered.", newsletter: "Daily Skrape", product: "Smart Lead", timestamp: "2026-04-10 09:15", read: true },
+  { id: "n17", type: "success", severity: "good_news", category: "reactivation", message: "Smart Reactivation matched 1,240 subscribers for Healthy Happy News.", newsletter: "Healthy Happy News", product: "Smart Reactivation", timestamp: "2026-04-09 10:22", read: true },
+
+  // Info / system
+  { id: "n18", type: "info", severity: "info", category: "billing", message: "Your April billing statement is ready — $4,500.00.", timestamp: "2026-04-09 14:00", read: true, actionLabel: "View", actionHref: "/portal/billing" },
+  { id: "n19", type: "info", severity: "info", category: "system", message: "Monthly performance report generated for all newsletters.", timestamp: "2026-04-08 06:00", read: true },
 ];
+
+// ─── Notification Grouping Helpers ──────────────────────────
+export interface NotificationGroup {
+  category: NotificationCategory;
+  severity: NotificationSeverity;
+  title: string;
+  summary: string;
+  items: Notification[];
+  unreadCount: number;
+  actionLabel?: string;
+  actionHref?: string;
+}
+
+export function groupNotifications(notifs: Notification[]): NotificationGroup[] {
+  const buckets = new Map<string, Notification[]>();
+
+  for (const n of notifs) {
+    const key = `${n.severity}:${n.category}`;
+    const arr = buckets.get(key) || [];
+    arr.push(n);
+    buckets.set(key, arr);
+  }
+
+  const groups: NotificationGroup[] = [];
+
+  for (const [, items] of buckets) {
+    const first = items[0];
+    const unreadCount = items.filter((n) => !n.read).length;
+
+    // Build human-readable summary
+    const newsletters = [...new Set(items.map((n) => n.newsletter).filter(Boolean))];
+    const details = items.map((n) => n.detail).filter(Boolean);
+
+    let title = "";
+    let summary = "";
+
+    switch (first.category) {
+      case "source_low":
+        title = `${items.length} sources running low`;
+        summary = newsletters.length > 0
+          ? `Across ${newsletters.join(", ")}. Most urgent: ${details.slice(0, 2).join("; ")}`
+          : `${details.slice(0, 2).join("; ")}`;
+        break;
+      case "delivery_issue":
+        title = `Delivery issues on ${items.length} domain${items.length > 1 ? "s" : ""}`;
+        summary = items.map((n) => n.detail || n.message).slice(0, 2).join(". ");
+        break;
+      case "source_performance":
+        title = `${items.length} sources performing well`;
+        summary = newsletters.length > 0
+          ? `Strong engagement on ${newsletters.join(", ")}`
+          : "High engagement rates detected";
+        break;
+      case "feed_volume":
+        title = "Smart Feed volume change";
+        summary = first.message;
+        break;
+      case "lead_delivery":
+        title = `${items.length} lead deliver${items.length > 1 ? "ies" : "y"} completed`;
+        summary = newsletters.length > 0 ? `For ${newsletters.join(", ")}` : first.message;
+        break;
+      case "reactivation":
+        title = "Reactivation matches completed";
+        summary = first.message;
+        break;
+      case "billing":
+        title = "Billing update";
+        summary = first.message;
+        break;
+      case "system":
+        title = "System update";
+        summary = first.message;
+        break;
+      default:
+        title = first.message;
+        summary = "";
+    }
+
+    groups.push({
+      category: first.category,
+      severity: first.severity,
+      title,
+      summary,
+      items,
+      unreadCount,
+      actionLabel: first.actionLabel,
+      actionHref: first.actionHref,
+    });
+  }
+
+  // Sort: action_needed first, then heads_up, then good_news, then info
+  const severityOrder: Record<NotificationSeverity, number> = { action_needed: 0, heads_up: 1, good_news: 2, info: 3 };
+  groups.sort((a, b) => severityOrder[a.severity] - severityOrder[b.severity]);
+
+  return groups;
+}
 
 // ─── Portal Product Status & Config ─────────────────────────
 export type PortalProductStatus = "active" | "trial" | "available";

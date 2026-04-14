@@ -67,6 +67,8 @@ export default function AdminDashboard() {
   // System events — real-time operational pulse
   const events = getSystemEventsForRange("24h");
   const eventsWeek = getSystemEventsForRange("7d");
+  const eventsMonth = getSystemEventsForRange("30d");
+  const eventsAll = getSystemEventsForRange("all");
 
   return (
     <div>
@@ -159,24 +161,104 @@ export default function AdminDashboard() {
         </Link>
       </div>
 
-      {/* System Events — Operational Pulse */}
+      {/* Signal Loop */}
       <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Signal Loop</h2>
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
+
+      {/* Publisher Signals — top row */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
         {[
-          { label: "Emails Sent", today: events.sent, week: eventsWeek.sent },
-          { label: "Opens", today: events.opens, week: eventsWeek.opens },
-          { label: "Clicks", today: events.clicks, week: eventsWeek.clicks },
-          { label: "Click Events", today: events.clickEvents, week: eventsWeek.clickEvents },
-          { label: "Partner Signals", today: events.partnerSignals, week: eventsWeek.partnerSignals },
+          { label: "New Subs Identified", today: events.newSubsIdentified, week: eventsWeek.newSubsIdentified, month: eventsMonth.newSubsIdentified, all: eventsAll.newSubsIdentified, colors: ["text-green-600", "text-green-600", "text-green-600", "text-green-600"] },
+          { label: "Real-time Partner Click Signals", today: events.partnerClickSignals, week: eventsWeek.partnerClickSignals, month: eventsMonth.partnerClickSignals, all: eventsAll.partnerClickSignals, colors: ["text-blue-600", "text-blue-600", "text-yellow-600", "text-green-600"] },
         ].map((e) => (
-          <div key={e.label} className="bg-white rounded-lg border border-gray-200 p-4">
-            <p className="text-xs font-medium text-gray-500">{e.label}</p>
-            <p className="text-xl font-bold text-gray-900 mt-1">{e.today.toLocaleString()}</p>
-            <p className="text-[10px] text-gray-400 mt-0.5">Today</p>
-            <p className="text-sm font-semibold text-gray-600 mt-2">{e.week.toLocaleString()}</p>
-            <p className="text-[10px] text-gray-400">This Week</p>
+          <div key={e.label} className="bg-white rounded-lg border border-gray-200 p-5">
+            <p className="text-xs font-semibold text-gray-500 mb-3">{e.label}</p>
+            <div className="grid grid-cols-4 gap-4">
+              {[
+                { value: e.today, label: "Today", color: e.colors[0] },
+                { value: e.week, label: "This Week", color: e.colors[1] },
+                { value: e.month, label: "This Month", color: e.colors[2] },
+                { value: e.all, label: "All Time", color: e.colors[3] },
+              ].map((col) => (
+                <div key={col.label}>
+                  <p className={`text-lg font-bold ${col.color}`}>{col.value.toLocaleString()}</p>
+                  <p className="text-[10px] text-gray-400">{col.label}</p>
+                </div>
+              ))}
+            </div>
           </div>
         ))}
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+        <div className="bg-white rounded-lg border border-gray-200 p-5">
+          <p className="text-xs font-semibold text-gray-500 mb-3">Net New Partner Click Signals</p>
+          <div className="grid grid-cols-4 gap-4">
+            {[
+              { value: events.netNewPartnerClickSignals, label: "Today", color: "text-green-600" },
+              { value: eventsWeek.netNewPartnerClickSignals, label: "This Week", color: "text-green-600" },
+              { value: eventsMonth.netNewPartnerClickSignals, label: "This Month", color: "text-yellow-600" },
+              { value: eventsAll.netNewPartnerClickSignals, label: "All Time", color: "text-green-600" },
+            ].map((col) => (
+              <div key={col.label}>
+                <p className={`text-lg font-bold ${col.color}`}>{col.value.toLocaleString()}</p>
+                <p className="text-[10px] text-gray-400">{col.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="bg-white rounded-lg border border-gray-200 p-5">
+          <p className="text-xs font-semibold text-gray-500 mb-3">CTO Partners</p>
+          <div className="grid grid-cols-4 gap-4">
+            {[
+              { value: events.ctoPartners, label: "Today", color: "text-blue-600" },
+              { value: eventsWeek.ctoPartners, label: "This Week", color: "text-blue-600" },
+              { value: eventsMonth.ctoPartners, label: "This Month", color: "text-green-600" },
+              { value: eventsAll.ctoPartners, label: "All Time", color: "text-green-600" },
+            ].map((col) => (
+              <div key={col.label}>
+                <p className={`text-lg font-bold ${col.color}`}>{col.value.toLocaleString()}</p>
+                <p className="text-[10px] text-gray-400">{col.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Click Events + Events Today — side by side */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
+        <div className="bg-white rounded-lg border border-gray-200 p-5">
+          <p className="text-xs font-semibold text-gray-500 mb-3">Click Events</p>
+          <div className="grid grid-cols-4 gap-4">
+            {[
+              { value: events.clickEvents, label: "Today", color: "text-green-600" },
+              { value: eventsWeek.clickEvents, label: "This Week", color: "text-green-600" },
+              { value: eventsMonth.clickEvents, label: "This Month", color: "text-green-600" },
+              { value: eventsAll.clickEvents, label: "All Time", color: "text-green-600" },
+            ].map((col) => (
+              <div key={col.label}>
+                <p className={`text-lg font-bold ${col.color}`}>{col.value.toLocaleString()}</p>
+                <p className="text-[10px] text-gray-400">{col.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="bg-white rounded-lg border border-gray-200 p-5">
+          <p className="text-xs font-semibold text-gray-500 mb-3">Events Today</p>
+          <div className="grid grid-cols-3 gap-4">
+            {[
+              { label: "Sent", value: events.sent, color: "text-green-600" },
+              { label: "Opens", value: events.opens, color: "text-blue-600" },
+              { label: "Clicks", value: events.clicks, color: "text-blue-600" },
+              { label: "Unsubs", value: events.unsubs, color: "text-yellow-600" },
+              { label: "Bounces", value: events.bounces, color: "text-red-500" },
+              { label: "Complaints", value: events.complaints, color: "text-red-600" },
+            ].map((e) => (
+              <div key={e.label}>
+                <p className={`text-lg font-bold ${e.color}`}>{e.value.toLocaleString()}</p>
+                <p className="text-[10px] text-gray-400">{e.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Alerts */}

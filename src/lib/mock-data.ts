@@ -296,10 +296,12 @@ export const dashboardMetrics = {
     emailValidation: { label: "Email Validation", last5Min: 42, lastHour: 583, last24Hours: 26_554, yesterday: 26_329 },
   },
   systemMetrics: {
-    clickEvents: { today: 165_100, thisWeek: 1_819_507, thisMonth: 6_768_785, allTime: 42_516_942 },
-    partnerClickSignals: { today: 542_654, thisWeek: 4_773_605, thisMonth: 21_123_824, allTime: 161_494_468 },
-    ctoPartners: { today: 129, thisWeek: 3_863, thisMonth: 15_471, allTime: 108_160 },
-    eventsToday: { sent: 1_611_214, opens: 222_137, clicks: 19_020 },
+    newSubsIdentified: { today: 346, thisWeek: 3_759, thisMonth: 25_325, allTime: 1_242_468 },
+    partnerClickSignals: { today: 521_903, thisWeek: 4_695_795, thisMonth: 20_679_919, allTime: 163_721_742 },
+    netNewPartnerClickSignals: { today: 9_652, thisWeek: 79_401, thisMonth: 286_956, allTime: 3_793_187 },
+    ctoPartners: { today: 91, thisWeek: 4_340, thisMonth: 16_155, allTime: 110_910 },
+    clickEvents: { today: 152_320, thisWeek: 1_911_960, thisMonth: 7_085_742, allTime: 43_594_030 },
+    eventsToday: { sent: 1_676_101, opens: 219_271, clicks: 17_451, unsubs: 2_822, bounces: 816, complaints: 3 },
   },
   alerts: [
     { type: "warning" as const, message: "6AM - NOOGA Smart Lead feed running low (34/day, 963 available)", link: "/admin/products/smart-lead" },
@@ -752,13 +754,19 @@ export function getProductPulseForRange(range: TimeRange) {
 // Get system event totals scaled to a time range
 export function getSystemEventsForRange(range: TimeRange) {
   const m = rangeMultipliers[range];
-  const { clickEvents, partnerClickSignals, eventsToday } = dashboardMetrics.systemMetrics;
+  const sm = dashboardMetrics.systemMetrics;
   return {
-    clickEvents: vary(clickEvents.today, m),
-    partnerSignals: vary(partnerClickSignals.today, m),
-    sent: vary(eventsToday.sent, m),
-    opens: vary(eventsToday.opens, m),
-    clicks: vary(eventsToday.clicks, m),
+    newSubsIdentified: vary(sm.newSubsIdentified.today, m),
+    partnerClickSignals: vary(sm.partnerClickSignals.today, m),
+    netNewPartnerClickSignals: vary(sm.netNewPartnerClickSignals.today, m),
+    ctoPartners: vary(sm.ctoPartners.today, m),
+    clickEvents: vary(sm.clickEvents.today, m),
+    sent: vary(sm.eventsToday.sent, m),
+    opens: vary(sm.eventsToday.opens, m),
+    clicks: vary(sm.eventsToday.clicks, m),
+    unsubs: vary(sm.eventsToday.unsubs, m),
+    bounces: vary(sm.eventsToday.bounces, m),
+    complaints: vary(sm.eventsToday.complaints, m),
   };
 }
 

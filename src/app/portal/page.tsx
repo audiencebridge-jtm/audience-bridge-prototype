@@ -3,7 +3,19 @@ import { PageHeader } from "@/components/shared/PageHeader";
 import { SummaryCard } from "@/components/shared/MetricCard";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { SimpleLineChart } from "@/components/portal/SimpleLineChart";
+import { GreetingLine } from "@/components/shared/GreetingLine";
+import { AccountHealthBar } from "@/components/portal/AccountHealthBar";
 import { getNewslettersByCompany, getCompanyById, clickerGrowthData, portalProducts, type ProductInventory } from "@/lib/mock-data";
+
+// Product brand colors from Figma style guide
+const productColors: Record<string, string> = {
+  smartLead: "#0097FF",
+  smartPixel: "#FD9F4C",
+  smartFeed: "#0097FF",
+  smartDelivery: "#0E9488",
+  smartReactivation: "#036383",
+  emailValidation: "#036383",
+};
 
 export default function PortalDashboard() {
   const myNewsletters = getNewslettersByCompany("1");
@@ -13,7 +25,10 @@ export default function PortalDashboard() {
 
   return (
     <div>
-      <PageHeader title="Welcome back, Daily Trends Media" subtitle="Here's your account overview" />
+      <GreetingLine name="Daily Trends Media" />
+      <PageHeader title="Account Overview" subtitle="Your newsletters, products, and performance at a glance" />
+
+      <AccountHealthBar />
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <SummaryCard title="Total Subscribers" value={totalSubs.toLocaleString()} trend={{ value: "+4.8%", positive: true }} subtitle="vs last month" />
@@ -23,14 +38,14 @@ export default function PortalDashboard() {
       </div>
 
       {/* 30-Day Clickers Chart */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-        <h3 className="font-semibold text-gray-900 mb-4">30 Day Clickers Growth Over Time</h3>
+      <div className="bg-white rounded-lg border border-gray-200/80 p-6 mb-6 shadow-[0_1px_2px_0_rgba(0,0,0,0.03)] hover:shadow-sm transition-all duration-200">
+        <h3 className="font-semibold text-gray-900 mb-4 font-heading">30 Day Clickers Growth Over Time</h3>
         <SimpleLineChart data={chartData} height={220} />
       </div>
 
       {/* Newsletter Table */}
       <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">My Newsletters</h2>
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden mb-6">
+      <div className="bg-white rounded-lg border border-gray-200/80 overflow-hidden mb-6 shadow-[0_1px_2px_0_rgba(0,0,0,0.03)]">
         <table className="w-full">
           <thead>
             <tr className="bg-gray-50 border-b border-gray-200">
@@ -47,7 +62,6 @@ export default function PortalDashboard() {
           </thead>
           <tbody className="divide-y divide-gray-100">
             {[...myNewsletters].sort((a, b) => {
-              // Attention score: lower domain rep + higher complaints = needs attention
               const attentionScore = (n: typeof a) => {
                 let score = 0;
                 if (n.domainRep === "LOW") score += 2;
@@ -58,7 +72,7 @@ export default function PortalDashboard() {
               };
               const diff = attentionScore(b) - attentionScore(a);
               if (diff !== 0) return diff;
-              return b.subscribers - a.subscribers; // larger first within same attention level
+              return b.subscribers - a.subscribers;
             }).map((nl) => {
               const hasFeed = nl.activeProducts.includes("Smart Feed");
               const hasDelivery = nl.activeProducts.includes("Smart Reactivation") || nl.activeProducts.includes("Smart Lead");
@@ -108,7 +122,7 @@ export default function PortalDashboard() {
 
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">My Products</h2>
-        <Link href="/portal/products" className="text-xs text-blue-600 hover:underline">View All →</Link>
+        <Link href="/portal/products" className="text-xs text-[#0097FF] hover:underline">View All →</Link>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {[...portalProducts].sort((a, b) => {
@@ -125,15 +139,24 @@ export default function PortalDashboard() {
         }).map((product) => {
           const company = getCompanyById("1")!;
           const inv = company.products[product.key as keyof typeof company.products] as ProductInventory | undefined;
+          const borderColor = productColors[product.key] || "#0097FF";
 
           return (
-            <div key={product.key} className="bg-white rounded-lg border border-gray-200 p-4">
+            <div
+              key={product.key}
+              className="bg-white rounded-lg border border-gray-200/80 p-4 border-l-4 shadow-[0_1px_2px_0_rgba(0,0,0,0.03)] hover:shadow-sm transition-all duration-200"
+              style={{ borderLeftColor: borderColor }}
+            >
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-900">{product.name}</span>
                 {product.status === "active" && <StatusBadge status="active" />}
                 {product.status === "trial" && <StatusBadge status="trial" label={`Trial · ${product.trialDaysRemaining}d`} />}
                 {product.status === "available" && <StatusBadge status="inactive" label="Not Active" />}
               </div>
+
+              {product.status === "trial" && (
+                <p className="text-xs text-amber-600 mb-2">{product.trialDaysRemaining} days left in trial</p>
+              )}
 
               {product.status === "active" && inv && (
                 <div className="mb-3">
@@ -151,7 +174,7 @@ export default function PortalDashboard() {
               )}
 
               {product.status === "active" && (
-                <Link href={product.href} className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-md hover:bg-blue-100 transition-colors">
+                <Link href={product.href} className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-[#0097FF] bg-[#E5F5FF] border border-[#0097FF]/20 rounded-md hover:bg-[#0097FF]/10 transition-colors">
                   Manage →
                 </Link>
               )}
@@ -160,14 +183,14 @@ export default function PortalDashboard() {
                   <Link href={product.href} className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-50 border border-gray-200 rounded-md hover:bg-gray-100 transition-colors">
                     Explore
                   </Link>
-                  <Link href={`/portal/purchase/${product.key}`} className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors">
+                  <Link href={`/portal/purchase/${product.key}`} className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-white bg-[#0097FF] rounded-md hover:bg-[#0097FF]/90 transition-colors">
                     Upgrade
                   </Link>
                 </div>
               )}
               {product.status === "available" && (
-                <Link href="/portal/products" className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-50 border border-gray-200 rounded-md hover:bg-gray-100 transition-colors">
-                  Learn More →
+                <Link href="/portal/products" className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-[#0097FF] bg-[#E5F5FF] border border-[#0097FF]/20 rounded-md hover:bg-[#0097FF]/10 transition-colors">
+                  Start Free Trial →
                 </Link>
               )}
             </div>

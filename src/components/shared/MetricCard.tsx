@@ -7,7 +7,7 @@ interface MetricCardProps {
 
 export function MetricCard({ title, metrics }: MetricCardProps) {
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-5">
+    <div className="bg-white rounded-lg border border-gray-200/80 p-4 sm:p-5 shadow-[0_1px_2px_0_rgba(0,0,0,0.03)] hover:shadow-sm hover:border-gray-300 transition-all duration-200">
       <h3 className="text-sm font-semibold text-gray-500 mb-3">{title}</h3>
       <div className="flex flex-wrap items-end gap-4 sm:gap-6">
         {metrics.map((m, i) => (
@@ -32,7 +32,7 @@ interface SummaryCardProps {
 
 export function SummaryCard({ title, value, subtitle, trend }: SummaryCardProps) {
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-5">
+    <div className="bg-white rounded-lg border border-gray-200/80 p-4 sm:p-5 shadow-[0_1px_2px_0_rgba(0,0,0,0.03)] hover:shadow-sm hover:border-gray-300 transition-all duration-200">
       <h3 className="text-xs sm:text-sm font-medium text-gray-500">{title}</h3>
       <p className="text-2xl sm:text-3xl font-bold text-gray-900 mt-1 sm:mt-2">
         {typeof value === "number" ? value.toLocaleString() : value}

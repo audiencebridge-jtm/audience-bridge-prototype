@@ -30,7 +30,7 @@ export default function PortalDashboard() {
 
       <AccountHealthBar />
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6">
         <SummaryCard title="Total Subscribers" value={totalSubs.toLocaleString()} trend={{ value: "+4.8%", positive: true }} subtitle="vs last month" />
         <SummaryCard title="New Subs This Month" value="25,056" trend={{ value: "+12%", positive: true }} />
         <SummaryCard title="Budget Remaining" value="$18,500" subtitle="of $25,000" />
@@ -38,15 +38,16 @@ export default function PortalDashboard() {
       </div>
 
       {/* 30-Day Clickers Chart */}
-      <div className="bg-white rounded-lg border border-gray-200/80 p-6 mb-6 shadow-[0_1px_2px_0_rgba(0,0,0,0.03)] hover:shadow-sm transition-all duration-200">
-        <h3 className="font-semibold text-gray-900 mb-4 font-heading">30 Day Clickers Growth Over Time</h3>
+      <div className="bg-white rounded-lg border border-gray-200/80 p-4 sm:p-6 mb-6 shadow-[0_1px_2px_0_rgba(0,0,0,0.03)] hover:shadow-sm transition-all duration-200">
+        <h3 className="text-sm sm:text-base font-semibold text-gray-900 mb-4 font-heading">30 Day Clickers Growth Over Time</h3>
         <SimpleLineChart data={chartData} height={220} />
       </div>
 
       {/* Newsletter Table */}
       <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">My Newsletters</h2>
       <div className="bg-white rounded-lg border border-gray-200/80 overflow-hidden mb-6 shadow-[0_1px_2px_0_rgba(0,0,0,0.03)]">
-        <table className="w-full">
+        <div className="overflow-x-auto">
+        <table className="w-full min-w-[700px]">
           <thead>
             <tr className="bg-gray-50 border-b border-gray-200">
               <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Newsletter</th>
@@ -118,6 +119,7 @@ export default function PortalDashboard() {
             })}
           </tbody>
         </table>
+        </div>
       </div>
 
       <div className="flex items-center justify-between mb-3">

@@ -61,8 +61,8 @@ export function AdminHealthBar({ companies }: { companies: Company[] }) {
   const indicators = computeAdminHealth(companies);
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200/80 p-4 mb-6 shadow-[0_1px_2px_0_rgba(0,0,0,0.03)]">
-      <div className="flex flex-wrap items-center gap-6">
+    <div className="bg-white rounded-lg border border-gray-200/80 p-3 sm:p-4 mb-6 shadow-[0_1px_2px_0_rgba(0,0,0,0.03)]">
+      <div className="grid grid-cols-2 sm:flex sm:flex-wrap sm:items-center gap-3 sm:gap-6">
         {indicators.map((ind) => {
           const Icon = ind.icon;
           const content = (

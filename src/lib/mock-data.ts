@@ -216,6 +216,47 @@ export const newsletters: Newsletter[] = [
   { id: "19", name: "Freedom Wire", companyId: "4", companyName: "Liberty Publishing", owner: "Liberty (ops@libertypub.com)", integration: "Customer.io", subscribers: 40_000, thirtyDayClickers: 1_500, engagementRate: 22.1, status: "active", activeProducts: ["Smart Lead", "Smart Pixel"], createdAt: "2026-03-01", domainRep: "MEDIUM", gmailComplaints: 0.100, deliverabilityScore: 96, deliveryRate: 95.9, openRate: 27.6, clickRate: 3.8, unsubRate: 0.04, spamRate: 0.02, sent: 8_000, growth: 0.5 },
 ];
 
+// ─── Audience Match ─────────────────────────────────────────
+
+export interface AudienceMatchRecord {
+  id: string;
+  publicationId: string;
+  email: string | null;
+  md5LcHem: string;
+  created: string;
+}
+
+export interface AudienceMatchUpload {
+  id: string;
+  publicationId: string;
+  fileName: string;
+  uploadDate: string;
+  recordCount: number;
+  uploadedBy: string;
+}
+
+export const audienceMatchUploads: AudienceMatchUpload[] = [
+  { id: "u1", publicationId: "1", fileName: "daily_skrape_engagers_mar.csv", uploadDate: "2026-03-15", recordCount: 4_230, uploadedBy: "chris@sovidigital.com" },
+  { id: "u2", publicationId: "1", fileName: "skrape_top_clickers.csv", uploadDate: "2026-04-02", recordCount: 1_875, uploadedBy: "justin@sovidigital.com" },
+  { id: "u3", publicationId: "2", fileName: "investing_pioneer_hashes.csv", uploadDate: "2026-03-28", recordCount: 3_100, uploadedBy: "chris@sovidigital.com" },
+  { id: "u4", publicationId: "8", fileName: "healthy_happy_top_engagers.csv", uploadDate: "2026-04-10", recordCount: 2_560, uploadedBy: "justin@sovidigital.com" },
+];
+
+// Pre-computed counts per newsletter (simulates COUNT(*) from audience_match table)
+export const audienceMatchCounts: Record<string, number> = {
+  "1": 6_105,
+  "2": 3_100,
+  "8": 2_560,
+};
+
+export function getAudienceMatchUploads(publicationId: string): AudienceMatchUpload[] {
+  return audienceMatchUploads.filter((u) => u.publicationId === publicationId);
+}
+
+export function getAudienceMatchCount(publicationId: string): number {
+  return audienceMatchCounts[publicationId] ?? 0;
+}
+
 // ─── Smart Lead Sources ──────────────────────────────────────
 export const smartLeadSources: SmartLeadSource[] = [
   { id: 1, newsletter: "Guardian", totalPurchased: 10_000, delivered: 945, remaining: 9_055, available: 27_653, dailyUsage: 253, daysRemaining: 35.8, costPerLead: 0.50, listKey: "7f7c7b27e883a8c6deea85e84ba5d84c", createdAt: "2026-04-06", status: "active" },

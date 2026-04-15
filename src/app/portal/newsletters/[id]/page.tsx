@@ -7,6 +7,7 @@ import { SummaryCard } from "@/components/shared/MetricCard";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { TabNav } from "@/components/shared/TabNav";
 import { SimpleLineChart } from "@/components/portal/SimpleLineChart";
+import { AudienceMatchingTab } from "@/components/portal/AudienceMatchingTab";
 import { getNewsletterById, clickerGrowthData } from "@/lib/mock-data";
 
 export default function PortalNewsletterDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -70,6 +71,10 @@ export default function PortalNewsletterDetailPage({ params }: { params: Promise
                 ))}
               </div>
             ),
+          },
+          {
+            label: "Audience Matching",
+            content: <AudienceMatchingTab newsletterId={id} />,
           },
         ]}
       />

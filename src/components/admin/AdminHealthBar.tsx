@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Users, Package, DollarSign, Activity } from "lucide-react";
-import { companies, getCompanyHealthStatus, getLowestInventory, dashboardMetrics } from "@/lib/mock-data";
+import { getCompanyHealthStatus, getLowestInventory, dashboardMetrics, type Company } from "@/lib/data";
 
 type HealthStatus = "green" | "yellow" | "red";
 
@@ -12,7 +12,7 @@ interface HealthIndicator {
   href?: string;
 }
 
-function computeAdminHealth(): HealthIndicator[] {
+function computeAdminHealth(companies: Company[]): HealthIndicator[] {
   // Clients health
   const healthCounts = { healthy: 0, warning: 0, critical: 0 };
   companies.forEach((c) => healthCounts[getCompanyHealthStatus(c)]++);
@@ -57,8 +57,8 @@ const statusColors: Record<HealthStatus, string> = {
   red: "bg-red-500",
 };
 
-export function AdminHealthBar() {
-  const indicators = computeAdminHealth();
+export function AdminHealthBar({ companies }: { companies: Company[] }) {
+  const indicators = computeAdminHealth(companies);
 
   return (
     <div className="bg-white rounded-lg border border-gray-200/80 p-4 mb-6 shadow-[0_1px_2px_0_rgba(0,0,0,0.03)]">

@@ -4,9 +4,9 @@ import { SummaryCard } from "@/components/shared/MetricCard";
 import { AdminHealthBar } from "@/components/admin/AdminHealthBar";
 import { AdminGroupedAlerts } from "@/components/admin/AdminGroupedAlerts";
 import {
-  dashboardMetrics, companies, generateInventoryAlerts,
-  getSystemEventsForRange,
-} from "@/lib/mock-data";
+  dashboardMetrics, generateInventoryAlerts,
+  getSystemEventsForRange, getCompanies,
+} from "@/lib/data";
 
 const LEAD_RATE = 0.50;
 const MATCH_RATE = 0.02;
@@ -24,7 +24,8 @@ function getFeedMRR(dailyUsage: number): number {
   return 250;
 }
 
-export default function AdminDashboard() {
+export default async function AdminDashboard() {
+  const companies = await getCompanies();
   const { summary, productPulse } = dashboardMetrics;
   const alerts = generateInventoryAlerts(companies);
 
@@ -75,7 +76,7 @@ export default function AdminDashboard() {
     <div>
       <PageHeader title="Dashboard" subtitle="Audience Bridge Admin Overview" />
 
-      <AdminHealthBar />
+      <AdminHealthBar companies={companies} />
 
       {/* Grouped Alerts — right after health bar for immediate triage */}
       <AdminGroupedAlerts alerts={alerts} />

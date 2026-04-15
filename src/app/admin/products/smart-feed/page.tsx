@@ -7,7 +7,8 @@ import { SummaryCard, MetricCard } from "@/components/shared/MetricCard";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { TimeRangeFilter, type TimeRange } from "@/components/shared/TimeRangeFilter";
 import { FilterDropdown } from "@/components/shared/FilterDropdown";
-import { dashboardMetrics, newsletters, companies, getNewsletterMetricsForRange } from "@/lib/mock-data";
+import { dashboardMetrics, newsletters, getNewsletterMetricsForRange } from "@/lib/mock-data";
+import { useAdminData } from "@/lib/admin-data-context";
 
 // Monthly SaaS pricing tiers based on usage
 function getFeedMRR(dailyUsage: number): number {
@@ -19,6 +20,7 @@ function getFeedMRR(dailyUsage: number): number {
 
 export default function SmartFeedPage() {
   const router = useRouter();
+  const { companies } = useAdminData();
   const [range, setRange] = useState<TimeRange>("30d");
   const [newsletterFilter, setNewsletterFilter] = useState("all");
 

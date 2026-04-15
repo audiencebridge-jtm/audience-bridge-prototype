@@ -7,7 +7,8 @@ import { SummaryCard, MetricCard } from "@/components/shared/MetricCard";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { TimeRangeFilter, type TimeRange } from "@/components/shared/TimeRangeFilter";
 import { FilterDropdown } from "@/components/shared/FilterDropdown";
-import { dashboardMetrics, newsletters, companies, type ProductInventory, getNewsletterMetricsForRange } from "@/lib/mock-data";
+import { dashboardMetrics, newsletters, type ProductInventory, getNewsletterMetricsForRange } from "@/lib/mock-data";
+import { useAdminData } from "@/lib/admin-data-context";
 
 function getPixelRate(units: number): number {
   if (units >= 50_000) return 0.10;
@@ -17,6 +18,7 @@ function getPixelRate(units: number): number {
 
 export default function SmartPixelPage() {
   const router = useRouter();
+  const { companies } = useAdminData();
   const [range, setRange] = useState<TimeRange>("30d");
   const [newsletterFilter, setNewsletterFilter] = useState("all");
 

@@ -7,12 +7,14 @@ import { SummaryCard, MetricCard } from "@/components/shared/MetricCard";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { TimeRangeFilter, type TimeRange } from "@/components/shared/TimeRangeFilter";
 import { FilterDropdown } from "@/components/shared/FilterDropdown";
-import { dashboardMetrics, companies, newsletters, reactivationRecords, getNewsletterMetricsForRange } from "@/lib/mock-data";
+import { dashboardMetrics, newsletters, reactivationRecords, getNewsletterMetricsForRange } from "@/lib/mock-data";
+import { useAdminData } from "@/lib/admin-data-context";
 
 const MATCH_RATE = 0.02;
 
 export default function SmartReactivationPage() {
   const router = useRouter();
+  const { companies } = useAdminData();
   const [range, setRange] = useState<TimeRange>("30d");
   const [newsletterFilter, setNewsletterFilter] = useState("all");
 

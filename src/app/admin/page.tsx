@@ -1,12 +1,16 @@
+"use client";
+
 import Link from "next/link";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { SummaryCard } from "@/components/shared/MetricCard";
 import { AdminHealthBar } from "@/components/admin/AdminHealthBar";
 import { AdminGroupedAlerts } from "@/components/admin/AdminGroupedAlerts";
+import { HubSpotDataBanner } from "@/components/admin/HubSpotDataBanner";
 import {
-  dashboardMetrics, companies, generateInventoryAlerts,
+  dashboardMetrics, generateInventoryAlerts,
   getSystemEventsForRange,
 } from "@/lib/mock-data";
+import { useAdminData } from "@/lib/admin-data-context";
 
 const LEAD_RATE = 0.50;
 const MATCH_RATE = 0.02;
@@ -25,6 +29,7 @@ function getFeedMRR(dailyUsage: number): number {
 }
 
 export default function AdminDashboard() {
+  const { companies, source, lastUpdated, loading, error, refresh } = useAdminData();
   const { summary, productPulse } = dashboardMetrics;
   const alerts = generateInventoryAlerts(companies);
 
@@ -74,6 +79,8 @@ export default function AdminDashboard() {
   return (
     <div>
       <PageHeader title="Dashboard" subtitle="Audience Bridge Admin Overview" />
+
+      <HubSpotDataBanner source={source} lastUpdated={lastUpdated} loading={loading} error={error} onRefresh={refresh} />
 
       <AdminHealthBar />
 

@@ -6,12 +6,14 @@ import { PageHeader } from "@/components/shared/PageHeader";
 import { SummaryCard, MetricCard } from "@/components/shared/MetricCard";
 import { TimeRangeFilter, type TimeRange } from "@/components/shared/TimeRangeFilter";
 import { FilterDropdown } from "@/components/shared/FilterDropdown";
-import { dashboardMetrics, newsletters, companies, getNewsletterMetricsForRange } from "@/lib/mock-data";
+import { dashboardMetrics, newsletters, getNewsletterMetricsForRange } from "@/lib/mock-data";
+import { useAdminData } from "@/lib/admin-data-context";
 
 const LEAD_RATE = 0.50;
 
 export default function SmartLeadPage() {
   const router = useRouter();
+  const { companies } = useAdminData();
   const [range, setRange] = useState<TimeRange>("30d");
   const [newsletterFilter, setNewsletterFilter] = useState("all");
 

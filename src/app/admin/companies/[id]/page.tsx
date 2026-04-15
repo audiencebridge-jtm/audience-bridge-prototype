@@ -8,7 +8,8 @@ import { SummaryCard } from "@/components/shared/MetricCard";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { TabNav } from "@/components/shared/TabNav";
 import { DataTable } from "@/components/shared/DataTable";
-import { getCompanyById, getNewslettersByCompany, invoices, type ProductInventory } from "@/lib/mock-data";
+import { getNewslettersByCompany, invoices, type ProductInventory } from "@/lib/mock-data";
+import { useAdminData } from "@/lib/admin-data-context";
 
 const productLabels: Record<string, string> = {
   smartLead: "Smart Lead", smartFeed: "Smart Feed", smartPixel: "Smart Pixel",
@@ -305,7 +306,8 @@ function GenerateInvoice({ companyName, productEntries }: { companyName: string;
 export default function CompanyDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
-  const company = getCompanyById(id);
+  const { companies } = useAdminData();
+  const company = companies.find((c) => c.id === id);
   const [showActivateProduct, setShowActivateProduct] = useState(false);
   const [showAddNewsletter, setShowAddNewsletter] = useState(false);
   const [showGenerateInvoice, setShowGenerateInvoice] = useState(false);

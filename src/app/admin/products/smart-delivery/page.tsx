@@ -7,12 +7,14 @@ import { SummaryCard, MetricCard } from "@/components/shared/MetricCard";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { TimeRangeFilter, type TimeRange } from "@/components/shared/TimeRangeFilter";
 import { FilterDropdown } from "@/components/shared/FilterDropdown";
-import { newsletters, companies, type Newsletter, getNewsletterMetricsForRange } from "@/lib/mock-data";
+import { newsletters, type Newsletter, getNewsletterMetricsForRange } from "@/lib/mock-data";
+import { useAdminData } from "@/lib/admin-data-context";
 
 const DELIVERY_MRR = 2_000;
 
 export default function SmartDeliveryPage() {
   const router = useRouter();
+  const { companies } = useAdminData();
   const [range, setRange] = useState<TimeRange>("24h");
   const [newsletterFilter, setNewsletterFilter] = useState("all");
 

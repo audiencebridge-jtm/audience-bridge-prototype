@@ -6,10 +6,11 @@ import { PageHeader } from "@/components/shared/PageHeader";
 import { TimeRangeFilter, type TimeRange } from "@/components/shared/TimeRangeFilter";
 import { FilterDropdown } from "@/components/shared/FilterDropdown";
 import {
-  newsletters, companies, type Newsletter,
+  newsletters, type Newsletter,
   getProductPulseForRange, getNewsletterMetricsForRange,
   scaleForRange,
 } from "@/lib/mock-data";
+import { useAdminData } from "@/lib/admin-data-context";
 
 const LEAD_RATE = 0.50;
 const MATCH_RATE = 0.02;
@@ -31,13 +32,14 @@ const productOptions = [
   { label: "Smart Reactivation", value: "Smart Reactivation" },
 ];
 
-const companyOptions = [
-  { label: "All Companies", value: "all" },
-  ...companies.map((c) => ({ label: c.name, value: c.id })),
-];
-
 export default function ReportingPage() {
   const router = useRouter();
+  const { companies } = useAdminData();
+
+  const companyOptions = [
+    { label: "All Companies", value: "all" },
+    ...companies.map((c) => ({ label: c.name, value: c.id })),
+  ];
   const [range, setRange] = useState<TimeRange>("30d");
   const [productFilter, setProductFilter] = useState("all");
   const [companyFilter, setCompanyFilter] = useState("all");

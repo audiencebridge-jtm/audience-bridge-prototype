@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { SummaryCard } from "@/components/shared/MetricCard";
 import { StatusBadge } from "@/components/shared/StatusBadge";
-import { companies, getCompanyHealthStatus, getLowestInventory, type Company, type ProductInventory } from "@/lib/mock-data";
+import { getCompanyHealthStatus, getLowestInventory, type Company, type ProductInventory } from "@/lib/mock-data";
+import { useAdminData } from "@/lib/admin-data-context";
 
 type HealthFilter = "all" | "critical" | "warning" | "healthy";
 type StatusFilter = "all" | "active" | "trial" | "suspended";
@@ -85,6 +86,7 @@ function AddCompanyModal({ onClose }: { onClose: () => void }) {
 
 export default function CompaniesPage() {
   const router = useRouter();
+  const { companies } = useAdminData();
   const [healthFilter, setHealthFilter] = useState<HealthFilter>("all");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [search, setSearch] = useState("");

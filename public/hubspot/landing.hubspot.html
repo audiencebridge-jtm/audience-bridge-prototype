@@ -87,23 +87,65 @@
     .byline p em { font-style: italic; }
     .byline p .name { color: var(--ink-900); font-weight: 600; font-style: normal; }
 
-    .subscribe { display: flex; flex-direction: column; gap: 12px; margin: 24px 0 0; max-width: 520px; }
-    @media (min-width: 560px) { .subscribe { flex-direction: row; } }
-    .subscribe input {
-      flex: 1; font-family: inherit; font-size: 16px;
-      padding: 14px 16px; border: 1px solid var(--ink-300); border-radius: 10px;
-      background: #fff; color: var(--ink-900); outline: none;
+    .subscribe { margin: 24px 0 0; max-width: 520px; }
+    .subscribe form {
+      display: flex;
+      flex-direction: column;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: stretch;
+    }
+    @media (min-width: 560px) {
+      .subscribe form { flex-direction: row; align-items: flex-start; }
+    }
+    .subscribe fieldset,
+    .subscribe .hs-form-field { flex: 1 1 240px; margin: 0 !important; padding: 0 !important; max-width: none !important; border: 0 !important; }
+    .subscribe label { position: absolute !important; left: -9999px !important; width: 1px !important; height: 1px !important; overflow: hidden !important; }
+    .subscribe .hs-form-required { display: none !important; }
+    .subscribe input[type="email"],
+    .subscribe input[type="text"],
+    .subscribe .hs-input {
+      width: 100% !important;
+      font-family: inherit !important;
+      font-size: 16px !important;
+      padding: 14px 16px !important;
+      border: 1px solid var(--ink-300) !important;
+      border-radius: 10px !important;
+      background: #fff !important;
+      color: var(--ink-900) !important;
+      outline: none !important;
+      box-shadow: none !important;
+      height: auto !important;
       transition: border-color .15s, box-shadow .15s;
     }
-    .subscribe input::placeholder { color: var(--ink-500); }
-    .subscribe input:focus { border-color: var(--ab-blue); box-shadow: 0 0 0 3px rgba(0, 151, 255, 0.2); }
-    .subscribe button {
-      font-family: inherit; font-size: 16px; font-weight: 600;
-      color: var(--ink-900); background: var(--ab-cta); border: 0;
-      padding: 14px 28px; border-radius: 10px; cursor: pointer;
-      transition: background-color .15s; white-space: nowrap;
+    .subscribe input::placeholder { color: var(--ink-500) !important; opacity: 1 !important; }
+    .subscribe input:focus {
+      border-color: var(--ab-blue) !important;
+      box-shadow: 0 0 0 3px rgba(0, 151, 255, 0.2) !important;
     }
-    .subscribe button:hover { background: var(--ab-cta-hover); }
+    .subscribe .hs-submit,
+    .subscribe .hs_submit,
+    .subscribe .actions { margin: 0 !important; padding: 0 !important; }
+    .subscribe input[type="submit"],
+    .subscribe button,
+    .subscribe .hs-button {
+      font-family: inherit !important;
+      font-size: 16px !important;
+      font-weight: 600 !important;
+      color: var(--ink-900) !important;
+      background: var(--ab-cta) !important;
+      border: 0 !important;
+      padding: 14px 28px !important;
+      border-radius: 10px !important;
+      cursor: pointer;
+      transition: background-color .15s;
+      white-space: nowrap;
+      box-shadow: none !important;
+      width: auto !important;
+    }
+    .subscribe input[type="submit"]:hover,
+    .subscribe button:hover,
+    .subscribe .hs-button:hover { background: var(--ab-cta-hover) !important; }
 
     .testimonial {
       margin: 32px 0 0; padding: 20px;

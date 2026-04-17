@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Audience Bridge Insights — Become smarter about email</title>
+  <meta name="description" content="A free newsletter read by founders, marketers, and publishers who want their email to produce more." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ab-blue: #0097FF;
+      --ab-blue-light: #E5F5FF;
+      --ab-cta: #FBBF24;
+      --ab-cta-hover: #F59E0B;
+      --ink-900: #0F172A;
+      --ink-700: #334155;
+      --ink-500: #64748B;
+      --ink-300: #CBD5E1;
+      --ink-200: #E2E8F0;
+      --ink-100: #F1F5F9;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: "DM Sans", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      color: var(--ink-900);
+      background: linear-gradient(120deg, #ffffff 0%, #ffffff 45%, var(--ab-blue-light) 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+    img { max-width: 100%; display: block; }
+    a { color: inherit; }
+
+    .site-header {
+      display: flex;
+      justify-content: center;
+      padding: 40px 24px 8px;
+    }
+    .site-header img { height: 42px; width: auto; }
+
+    main { flex: 1; }
+
+    .hero {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 24px 24px 72px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 40px;
+      align-items: center;
+    }
+    @media (min-width: 900px) {
+      .hero { grid-template-columns: 1.1fr 1fr; gap: 64px; padding-top: 32px; padding-bottom: 96px; }
+    }
+
+    .stars {
+      color: var(--ab-cta);
+      font-size: 20px;
+      letter-spacing: 2px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-family: "Space Grotesk", "DM Sans", system-ui, sans-serif;
+      font-size: clamp(36px, 5.2vw, 60px);
+      line-height: 1.05;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      margin: 0 0 24px;
+      color: var(--ink-900);
+    }
+
+    .lede {
+      font-size: 18px;
+      color: var(--ink-700);
+      margin: 0 0 16px;
+      max-width: 560px;
+    }
+    .lede strong { color: var(--ink-900); font-weight: 600; }
+
+    .byline {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 20px 0 8px;
+      margin: 24px 0 0;
+      border-top: 1px solid var(--ink-200);
+      max-width: 560px;
+    }
+    .byline img {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: var(--ink-100);
+    }
+    .byline p { margin: 0; font-size: 14px; color: var(--ink-500); }
+    .byline p em { font-style: italic; }
+    .byline p .name { color: var(--ink-900); font-weight: 600; font-style: normal; }
+
+    /* TODO: Replace this block with HubSpot form embed.
+       HubSpot → Marketing → Forms → create form → Embed code.
+       The visual input/button below is a placeholder for design preview only. */
+    .subscribe {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin: 24px 0 0;
+      max-width: 520px;
+    }
+    @media (min-width: 560px) {
+      .subscribe { flex-direction: row; }
+    }
+    .subscribe input {
+      flex: 1;
+      font-family: inherit;
+      font-size: 16px;
+      padding: 14px 16px;
+      border: 1px solid var(--ink-300);
+      border-radius: 10px;
+      background: #fff;
+      color: var(--ink-900);
+      outline: none;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .subscribe input::placeholder { color: var(--ink-500); }
+    .subscribe input:focus {
+      border-color: var(--ab-blue);
+      box-shadow: 0 0 0 3px rgba(0, 151, 255, 0.2);
+    }
+    .subscribe button {
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--ink-900);
+      background: var(--ab-cta);
+      border: 0;
+      padding: 14px 28px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color .15s;
+      white-space: nowrap;
+    }
+    .subscribe button:hover { background: var(--ab-cta-hover); }
+
+    .testimonial {
+      margin: 32px 0 0;
+      padding: 20px;
+      border: 1px solid var(--ink-200);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.6);
+      max-width: 520px;
+    }
+    .testimonial blockquote {
+      margin: 0;
+      font-size: 15px;
+      color: var(--ink-900);
+    }
+    .testimonial figcaption {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .testimonial figcaption img {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: var(--ink-100);
+    }
+    .testimonial .who { font-size: 14px; line-height: 1.3; }
+    .testimonial .who .name { font-weight: 600; color: var(--ink-900); }
+    .testimonial .who .role { color: var(--ink-500); }
+
+    .phone-wrap {
+      display: flex;
+      justify-content: center;
+    }
+    @media (min-width: 900px) {
+      .phone-wrap { justify-content: flex-end; }
+    }
+    .phone-wrap img {
+      width: 100%;
+      max-width: 320px;
+      height: auto;
+      border-radius: 44px;
+      box-shadow: 0 30px 60px -20px rgba(15, 23, 42, 0.35);
+    }
+
+    .trusted {
+      border-top: 1px solid var(--ink-200);
+      background: rgba(255, 255, 255, 0.5);
+      padding: 48px 24px;
+    }
+    .trusted-inner { max-width: 1120px; margin: 0 auto; }
+    .trusted .eyebrow {
+      text-align: center;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      color: var(--ink-500);
+      margin: 0 0 24px;
+    }
+    .logo-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 24px 40px;
+    }
+    .logo-row img {
+      height: 28px;
+      width: auto;
+      opacity: 0.55;
+      filter: grayscale(100%);
+      transition: opacity .15s;
+    }
+    .logo-row img:hover { opacity: 0.9; }
+
+    footer {
+      border-top: 1px solid var(--ink-200);
+      padding: 24px;
+      text-align: center;
+      font-size: 14px;
+      color: var(--ink-500);
+    }
+    footer .links {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+    footer .links a { text-decoration: none; }
+    footer .links a:hover { color: var(--ink-900); }
+    footer .sep { color: var(--ink-300); }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <img src="../images/ab-logo-horizontal.svg" alt="Audience Bridge" width="220" height="42" />
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <div class="stars" aria-label="5 out of 5 stars">★ ★ ★ ★ ★</div>
+
+        <h1>Become smarter about email - in just 5 minutes a day</h1>
+
+        <p class="lede">
+          <strong>Audience Bridge Insights</strong> shows you what actually drives
+          deliverability, list growth, and email revenue… based on
+          <strong>real data from millions of subscribers in our network.</strong>
+        </p>
+
+        <p class="lede">
+          It's a free newsletter read by founders, marketers, and publishers
+          who want their <strong>email to produce more.</strong>
+        </p>
+
+        <div class="byline">
+          <img src="./images/author-chris.jpg" alt="Chris Miquel" width="40" height="40" />
+          <p><em>Authored by email growth pioneer,</em> <span class="name">Chris Miquel</span></p>
+        </div>
+
+        <!-- TODO: Replace this block with HubSpot form embed.
+             HubSpot → Marketing → Forms → create form → Embed code.
+             The visual input/button below is a placeholder for design preview only. -->
+        <form class="subscribe" onsubmit="return false;">
+          <label for="email" style="position:absolute;left:-9999px;">Email address</label>
+          <input id="email" type="email" placeholder="Enter your email" required />
+          <button type="submit">Join Free</button>
+        </form>
+
+        <figure class="testimonial">
+          <blockquote>
+            “If you want someone to help you, I recommend Chris Miquel. He knows his stuff.”
+          </blockquote>
+          <figcaption>
+            <img src="./images/testimonial-matt.jpg" alt="Matt Paulson" width="36" height="36" />
+            <div class="who">
+              <div class="name">Matt Paulson</div>
+              <div class="role">Founder of MarketBeat</div>
+            </div>
+          </figcaption>
+        </figure>
+      </div>
+
+      <div class="phone-wrap">
+        <img src="./images/phone-newsletter.png" alt="Audience Bridge Insights newsletter preview on an iPhone" width="320" height="620" />
+      </div>
+    </section>
+
+    <section class="trusted">
+      <div class="trusted-inner">
+        <p class="eyebrow">TRUSTED BY TEAMS AT</p>
+        <div class="logo-row">
+          <img src="./images/logo-theflyover.svg" alt="The Flyover" height="28" />
+          <img src="./images/logo-goldco.svg" alt="GoldCo" height="28" />
+          <img src="./images/logo-gundrymd.svg" alt="Gundry MD" height="28" />
+          <img src="./images/logo-marketbeat.svg" alt="MarketBeat" height="28" />
+          <img src="./images/logo-nursingbeat.svg" alt="The Nursing Beat" height="28" />
+          <img src="./images/logo-oan.svg" alt="OAN" height="28" />
+          <img src="./images/logo-paleohacks.svg" alt="PaleoHacks" height="28" />
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="links">
+      <a href="#">Privacy Policy</a>
+      <span class="sep" aria-hidden="true">·</span>
+      <a href="#">Terms of Service</a>
+    </div>
+    <div>© 2026 Audience Bridge. All rights reserved.</div>
+  </footer>
+</body>
+</html>
